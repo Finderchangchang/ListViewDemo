@@ -25,7 +25,7 @@ public class BaseApplication extends Application {
         return sInstance;
     }
 
-    //ÏµÍ³´¦ÓÚ×ÊÔ´ØÑ·¦µÄ×´Ì¬
+    //ç³»ç»Ÿå¤„äºèµ„æºåŒ®ä¹çš„çŠ¶æ€
     @Override
     public void onLowMemory() {
         super.onLowMemory();

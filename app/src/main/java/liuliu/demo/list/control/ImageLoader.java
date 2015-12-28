@@ -16,6 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import liuliu.demo.list.R;
+
 /**
  * 加载图片
  * Created by Administrator on 2015/12/25.
@@ -60,6 +62,13 @@ public class ImageLoader {
         return mCaches.get(url);
     }
 
+    /**
+     * 设置图片相关方法
+     *
+     * @param imageView 需要设置的组件
+     * @param url       需要显示的图片路径
+     * @param defImg    默认本地图片
+     */
     public void showImageBuThread(ImageView imageView, final String url, int defImg) {
         mImageView = imageView;
         mDefImg = defImg;
@@ -69,17 +78,42 @@ public class ImageLoader {
         } else {
             mImageView.setImageBitmap(bitmap);
         }
+    }
 
+    /**
+     * 设置图片相关方法
+     *
+     * @param imageView 需要设置的组件
+     * @param url       需要显示的图片路径
+     * @param defurl    默认本地图片
+     */
+    public void showImageBuThread(ImageView imageView, final String url, String defurl) {
+        mImageView = imageView;
+        Bitmap bitmap = getBitmapByCache(url);
+        if (bitmap == null) {
+            new NewsAsyncTask(mImageView, url, defurl).execute(url);
+        } else {
+            mImageView.setImageBitmap(bitmap);
+        }
     }
 
     private class NewsAsyncTask extends AsyncTask<String, Void, Bitmap> {
         private ImageView mImageView;
         private String mUrl;
+        private String mDefUrl;
 
         public NewsAsyncTask(ImageView mImageView, String mUrl) {
             this.mImageView = mImageView;
             this.mUrl = mUrl;
         }
+
+        public NewsAsyncTask(ImageView mImageView, String mUrl, String defurl) {
+            this.mImageView = mImageView;
+            this.mUrl = mUrl;
+            this.mDefUrl = defurl;
+        }
+
+        Bitmap def_bitmap;
 
         @Override
         protected Bitmap doInBackground(String... params) {
@@ -87,6 +121,18 @@ public class ImageLoader {
             Bitmap bitmap = getBitmapByUrl(url);
             if (bitmap != null) {
                 addBitmapToCache(url, bitmap);
+            }
+
+            if (mDefUrl != null) {
+                def_bitmap = getBitmapByCache(mDefUrl);
+                if (def_bitmap == null) {
+                    def_bitmap = getBitmapByUrl(mDefUrl);
+                    if (def_bitmap != null) {
+                        addBitmapToCache(mDefUrl, def_bitmap);
+                    } else {
+                        mDefUrl = null;
+                    }
+                }
             }
             return bitmap;
         }
@@ -98,7 +144,14 @@ public class ImageLoader {
                 if (!mUrl.equals("")) {
                     mImageView.setImageBitmap(bitmap);
                 } else {
-                    mImageView.setImageResource(mDefImg);//设置为默认图片
+                    if (mDefUrl != null) {
+                        mImageView.setImageBitmap(def_bitmap);
+                    } else if (mDefImg != 0) {
+                        mImageView.setImageResource(mDefImg);//设置为默认图片
+                    } else {
+                        mImageView.setImageResource(R.mipmap.ic_launcher);//设置为默认图片
+                    }
+
                 }
             }
         }
@@ -121,10 +174,8 @@ public class ImageLoader {
                 bitmap = BitmapFactory.decodeStream(is);
                 connection.disconnect();
                 return bitmap;
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                return null;
             } finally {
                 try {
                     if (is != null) {

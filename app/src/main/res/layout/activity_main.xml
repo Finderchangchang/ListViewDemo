@@ -29,14 +29,6 @@
                 android:id="@+id/lv_main"
                 android:layout_width="match_parent"
                 android:layout_height="800dp">
-
-            </ListView>
-
-            <ListView
-                android:id="@+id/lv_two_main"
-                android:layout_width="match_parent"
-                android:layout_height="800dp">
-
             </ListView>
         </LinearLayout>
     </ScrollView>
