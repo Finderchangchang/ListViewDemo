@@ -59,6 +59,9 @@ public class ImageLoader {
      * @return 图片对象
      */
     public Bitmap getBitmapByCache(String url) {
+        if (url == null) {
+            return null;
+        }
         return mCaches.get(url);
     }
 

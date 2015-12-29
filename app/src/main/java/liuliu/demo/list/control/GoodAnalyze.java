@@ -23,11 +23,11 @@ import java.util.List;
  * 解析json的方法
  * Created by Administrator on 2015/12/25.
  */
-public class JSONAnalyze<T> {
+public class GoodAnalyze<T> {
     private Context mIntails;
     private String mClassName;//类名
 
-    public JSONAnalyze(Context mIntails, String className) {
+    public GoodAnalyze(Context mIntails, String className) {
         this.mIntails = mIntails;
         this.mClassName = className;
     }
@@ -37,13 +37,14 @@ public class JSONAnalyze<T> {
         JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
                 new Response.Listener<JSONObject>() {
                     List<T> beans = new ArrayList<>();
+
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if (response.getString("error_code").equals("0")) {//请求成功触发事件
-                                JSONArray json = response.getJSONArray("result");
-                                for (int i = 0; i < json.length(); i++) {
-                                    JSONObject data = (JSONObject) json.get(i);
+                            if (response.getString("return").equals("OK")) {//请求成功触发事件
+                                JSONArray json = response.getJSONArray("data");
+                                for (int i = 0; i < json.getJSONArray(0).length(); i++) {
+                                    JSONObject data = (JSONObject) json.getJSONArray(0).get(i);
                                     T ben = (T) getObject(mClassName, data);
                                     beans.add(ben);
                                 }

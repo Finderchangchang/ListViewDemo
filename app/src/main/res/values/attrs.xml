@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<declare-styleable name="GridLinearLayout">
+    <attr name="verticalSpace" format="dimension"/>
+    <attr name="horizontalSpace" format="dimension"/>
+    <attr name="rows" format="integer"/>
+    <attr name="columns" format="integer"/>
+</declare-styleable>
+    </resources>

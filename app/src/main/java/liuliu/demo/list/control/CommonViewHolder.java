@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 /**
  * Created by liuliu on 2015/11/16   16:29
  *
@@ -76,9 +78,9 @@ public class CommonViewHolder {
      * @param text
      * @return
      */
-    public CommonViewHolder setText(int viewId, String text) {
+    public CommonViewHolder setText(int viewId, Object text) {
         TextView view = getView(viewId);
-        view.setText(text);
+        view.setText(text + "");
         return this;
     }
 
