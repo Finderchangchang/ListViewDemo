@@ -6,6 +6,23 @@
     <color name="main_item_line">#E2E2E2</color>
     <color name="total_bg">#F1F1F1</color>
     <color name="main_line">#DDDDDD</color>
+    <color name="main_dibu_press">#BB2200</color>
+    <color name="main_dibu_normal">#4A4A4A</color>
+    <color name="good_type_btn_press">#12B059</color>
+    <color name="good_type_btn">#EFEFEF</color>
+    <color name="main_item_normal">#484848</color>
+    <color name="main_item_pressed">#B92100</color>
+
+    <color name="biaoqian_cuxiao">#f8931f</color>
+    <color name="biaoqian_tuijian">#2ba6e1</color>
+    <color name="biaoqian_xiangou">#93268f</color>
+    <color name="biaoqian_shouqing">#666</color>
+    <color name="biaoqian_zhuanqu">#e95613</color>
+    <color name="biaoqian_xianshi">#e50112</color>
+    <color name="biaoqian_maizeng">#00887a</color>
+    <color name="biaoqian_maiyou">#214b95</color>
+    <color name="biaoqian_xinpin">#8ec220</color>
+
 
     <color name="pull_refresh_color_1">#67cdb7</color>
     <color name="pull_refresh_color_2">#9b73e6</color>

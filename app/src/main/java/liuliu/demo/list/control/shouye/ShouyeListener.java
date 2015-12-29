@@ -11,6 +11,7 @@ import java.util.List;
 
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.AnalyzeBase;
+import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.NewsBean;
 
@@ -73,7 +74,39 @@ public class ShouyeListener {
         }, url);
     }
 
+    public void loadHotGood(final OnLoadHot load, String url) {
+        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+            GoodModel model;
+
+            @Override
+            public void load(boolean result, final Object object) {
+                JSONArray array = (JSONArray) object;
+                List[] lists = new List[array.length()];
+                try {
+                    List list;
+                    for (int i = 0; i < array.length(); i++) {
+                        list= new ArrayList();
+                        JSONArray arr = array.getJSONArray(i);
+                        for (int j = 0; j < arr.length(); j++) {
+                            model = new GoodModel();
+                            model = (GoodModel) Utils.getObject("GoodModel", arr.getJSONObject(j));
+                            list.add(model);
+                        }
+                        lists[i] = list;
+                    }
+                    load.load(lists);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, url);
+    }
+
     public interface OnLoad {
         void load(int type, List list);
+    }
+
+    public interface OnLoadHot {
+        void load(List[] lists);
     }
 }

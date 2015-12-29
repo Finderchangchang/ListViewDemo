@@ -1,11 +1,17 @@
 package liuliu.demo.list.ui;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import liuliu.demo.list.R;
@@ -15,14 +21,16 @@ import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.base.JSONAnalyze;
 import liuliu.demo.list.control.shouye.ShouyeListener;
+import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
+import liuliu.demo.list.model.ItemModel;
 import liuliu.demo.list.view.GridLinearLayout;
 
 /**
  * Created by Administrator on 2015/12/29.
  */
-public class ShouyeFragment extends BaseFragment {
+public class ShouyeFragment extends BaseFragment implements View.OnClickListener {
     private GridLinearLayout guanggao_view;
     MainActivity mIntails;
     //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
@@ -39,6 +47,24 @@ public class ShouyeFragment extends BaseFragment {
     CommonAdapter<GoodModel> mAdapters;
     ShouyeListener mListener;
 
+    List<ItemModel> mItems;
+    List list[];
+    ChangeItemModel normalModel;
+    ChangeItemModel pressedModel;
+    int now_preaaed = -1;//当前点击的底部菜单
+    RelativeLayout hot_tejia_rl;
+    LinearLayout hot_tejia_ll;
+    ImageView hot_tejia_iv;
+    TextView hot_tejia_tv;
+    RelativeLayout hot_jingpin_rl;
+    LinearLayout hot_jingpin_ll;
+    ImageView hot_jingpin_iv;
+    TextView hot_jingpin_tv;
+    RelativeLayout hot_zuixin_rl;
+    LinearLayout hot_zuixin_ll;
+    ImageView hot_zuixin_iv;
+    TextView hot_zuixin_tv;
+
     @Override
     public void initViews() {
         setContentView(R.layout.frag_shouye);
@@ -47,6 +73,30 @@ public class ShouyeFragment extends BaseFragment {
 
     @Override
     public void initEvents(View view) {
+        mItemList = new ArrayList<>();
+        hot_tejia_rl = (RelativeLayout) view.findViewById(R.id.hot_tejia_rl);
+        hot_jingpin_rl = (RelativeLayout) view.findViewById(R.id.hot_jingpin_rl);
+        hot_zuixin_rl = (RelativeLayout) view.findViewById(R.id.hot_zuixin_rl);
+        hot_tejia_rl.setOnClickListener(this);
+        hot_jingpin_rl.setOnClickListener(this);
+        hot_zuixin_rl.setOnClickListener(this);
+        hot_tejia_ll = (LinearLayout) view.findViewById(R.id.hot_tejia_ll);
+        hot_jingpin_ll = (LinearLayout) view.findViewById(R.id.hot_jingpin_ll);
+        hot_zuixin_ll = (LinearLayout) view.findViewById(R.id.hot_zuixin_ll);
+        hot_tejia_iv = (ImageView) view.findViewById(R.id.hot_tejia_iv);
+        hot_jingpin_iv = (ImageView) view.findViewById(R.id.hot_jingpin_iv);
+        hot_zuixin_iv = (ImageView) view.findViewById(R.id.hot_zuixin_iv);
+        hot_tejia_tv = (TextView) view.findViewById(R.id.hot_tejia_tv);
+        hot_jingpin_tv = (TextView) view.findViewById(R.id.hot_jingpin_tv);
+        hot_zuixin_tv = (TextView) view.findViewById(R.id.hot_zuixin_tv);
+        mItemList = new ArrayList<>();
+        mItemList.add(new ChangeItemModel(hot_tejia_rl, hot_tejia_ll, hot_tejia_tv, hot_tejia_iv));
+        mItemList.add(new ChangeItemModel(hot_jingpin_rl, hot_jingpin_ll, hot_jingpin_tv, hot_jingpin_iv));
+        mItemList.add(new ChangeItemModel(hot_zuixin_rl, hot_zuixin_ll, hot_zuixin_tv, hot_zuixin_iv));
+        mItems = new ArrayList<>();
+        mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
+        mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
+        mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
         guanggao_view = (GridLinearLayout) view.findViewById(R.id.guanggao_main);
         hotgood_view = (GridLinearLayout) view.findViewById(R.id.hot_good_main);
         goodtype_view = (GridLinearLayout) view.findViewById(R.id.goodtype_main);
@@ -99,7 +149,13 @@ public class ShouyeFragment extends BaseFragment {
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-
+        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
+            @Override
+            public void load(List[] lists) {
+                list = lists;
+                HotClick(0, lists[0]);
+            }
+        }, mGoodUrl);
         json = new JSONAnalyze<GoodModel>(mIntails, "GoodModel");
         json.getJson(new JSONAnalyze.OnLoadData() {
             @Override
@@ -115,10 +171,49 @@ public class ShouyeFragment extends BaseFragment {
                 };
                 hotgood_view.setAdapter(mAdapters);
                 hotgood_view.setColumns(2);
-                hotgood_view.bindLinearLayout();
+//                hotgood_view.bindLinearLayout();
                 mSwipe.setRefreshing(false);
             }
         }, mGoodUrl);
+    }
+
+    List<ChangeItemModel> mItemList;
+    private int clickItem;//热门商品点击的项
+
+    /**
+     * 热门商品选择
+     *
+     * @param position 选中的位置
+     * @param mList    商品信息集合
+     */
+    private void HotClick(final int position, final List mList) {
+        normalModel = mItemList.get(clickItem);
+        pressedModel = mItemList.get(position);
+        //恢复成未点击状态
+        normalModel.getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_normal));
+        Bitmap bitmap = Utils.readBitMap(mIntails, mItems.get(clickItem).getNormal_img());
+        normalModel.getIv().setImageBitmap(bitmap);
+        normalModel.getRl().setBackgroundColor(mIntails.getResources().getColor(R.color.total_bg));
+        normalModel.getLl().setVisibility(View.VISIBLE);
+        //设置为点击状态
+        pressedModel.getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_pressed));
+        pressedModel.getIv().setImageBitmap(Utils.readBitMap(mIntails, mItems.get(position).getPressed_img()));
+        pressedModel.getRl().setBackgroundColor(mIntails.getResources().getColor(R.color.white));
+        pressedModel.getLl().setVisibility(View.GONE);
+        clickItem = position;
+        mAdapters = new CommonAdapter<GoodModel>(mIntails, mList, R.layout.item_good_layout) {
+            @Override
+            public void convert(CommonViewHolder holder, List<GoodModel> list, int position) {
+                GoodModel model = list.get(position);
+                holder.setImageByUrl(R.id.iv_icon, model.getImage(), R.mipmap.error);
+                holder.setText(R.id.tv_title, model.getName());
+                holder.setText(R.id.tv_desc, model.getPrice());
+            }
+        };
+        hotgood_view.setAdapter(mAdapters);
+        hotgood_view.setColumns(2);
+        hotgood_view.bindLinearLayout();
+        mSwipe.setRefreshing(false);
     }
 
     //加载广告布局
@@ -165,5 +260,20 @@ public class ShouyeFragment extends BaseFragment {
         holder.setVisible(R.id.totalItem_ll, false);
         holder.setVisible(R.id.total_left_ll, false);
         holder.setVisible(R.id.total_right_ll, false);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.hot_tejia_rl:
+                HotClick(0, list[0]);
+                break;
+            case R.id.hot_jingpin_rl:
+                HotClick(1, list[1]);
+                break;
+            case R.id.hot_zuixin_rl:
+                HotClick(2, list[2]);
+                break;
+        }
     }
 }

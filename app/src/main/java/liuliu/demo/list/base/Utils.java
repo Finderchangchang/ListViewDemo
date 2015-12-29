@@ -1,10 +1,13 @@
 package liuliu.demo.list.base;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.WindowManager;
 
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,7 +34,23 @@ public class Utils {
         }
         return objectModel;
     }
+    public static Bitmap readBitMap(Context context, int resId) {
 
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+
+        opt.inPreferredConfig = Bitmap.Config.RGB_565;
+
+        opt.inPurgeable = true;
+
+        opt.inInputShareable = true;
+
+        //  获取资源图片
+
+        InputStream is = context.getResources().openRawResource(resId);
+
+        return BitmapFactory.decodeStream(is, null, opt);
+
+    }
     //创建的model对象，字段名，字段值
     public static void setProperty(Object bean, String propertyName, String propertyValue, String type) throws Exception {
         Class cls = bean.getClass();

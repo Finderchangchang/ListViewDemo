@@ -7,7 +7,6 @@ package liuliu.demo.list.view;
 import android.app.Service;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Point;
 import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Gravity;
