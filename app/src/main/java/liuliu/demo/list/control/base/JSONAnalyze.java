@@ -1,4 +1,4 @@
-package liuliu.demo.list.control;
+package liuliu.demo.list.control.base;
 
 import android.content.Context;
 
@@ -37,18 +37,34 @@ public class JSONAnalyze<T> {
         JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
                 new Response.Listener<JSONObject>() {
                     List<T> beans = new ArrayList<>();
+
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            if (response.getString("error_code").equals("0")) {//请求成功触发事件
-                                JSONArray json = response.getJSONArray("result");
-                                for (int i = 0; i < json.length(); i++) {
-                                    JSONObject data = (JSONObject) json.get(i);
-                                    T ben = (T) getObject(mClassName, data);
-                                    beans.add(ben);
+                            if (!response.isNull("error_code")) {
+                                if (response.getString("error_code").equals("0")) {
+                                    JSONArray json = response.getJSONArray("result");
+                                    for (int i = 0; i < json.length(); i++) {
+                                        JSONObject data = (JSONObject) json.get(i);
+                                        T ben = (T) getObject(mClassName, data);
+                                        beans.add(ben);
+                                    }
+                                    loadData.load(beans);
                                 }
-                                loadData.load(beans);
+                            } else if (!response.isNull("return")) {
+                                if (response.getString("return").equals("OK")) {//请求成功触发事件
+                                    if (response.getString("return").equals("OK")) {//请求成功触发事件
+                                        JSONArray json = response.getJSONArray("data");
+                                        for (int i = 0; i < json.getJSONArray(0).length(); i++) {
+                                            JSONObject data = (JSONObject) json.getJSONArray(0).get(i);
+                                            T ben = (T) getObject(mClassName, data);
+                                            beans.add(ben);
+                                        }
+                                        loadData.load(beans);
+                                    }
+                                }
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

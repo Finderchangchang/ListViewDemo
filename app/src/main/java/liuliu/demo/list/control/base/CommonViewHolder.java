@@ -1,4 +1,4 @@
-package liuliu.demo.list.control;
+package liuliu.demo.list.control.base;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,9 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Objects;
+import liuliu.demo.list.model.ImageModel;
 
 /**
  * Created by liuliu on 2015/11/16   16:29
@@ -54,6 +55,14 @@ public class CommonViewHolder {
 
     public View getConvertView() {
         return mConvertView;
+    }
+
+    public CommonViewHolder setHeight(int viewId, int height) {
+        LinearLayout view = getView(viewId);
+        ViewGroup.LayoutParams lp = view.getLayoutParams();
+        lp.height = height;
+        view.setLayoutParams(lp);
+        return this;
     }
 
     /**
@@ -103,8 +112,6 @@ public class CommonViewHolder {
         return this;
     }
 
-    ;
-
     /**
      * 为ImageView设置图片
      *
@@ -139,6 +146,12 @@ public class CommonViewHolder {
 
     public CommonViewHolder setImageByUrl(int viewId, String url) {
         mImageLoader.showImageBuThread(setImageTag(viewId, url), url, 0);
+        return this;
+    }
+
+    public CommonViewHolder setImageByUrl(int viewId, Object model) {
+        ImageModel m=(ImageModel)model;
+        mImageLoader.showImageBuThread(setImageTag(viewId, m.getImage()), m.getImage(), 0);
         return this;
     }
 
@@ -185,6 +198,14 @@ public class CommonViewHolder {
         } else {
             view.setVisibility(View.GONE);
         }
+        return this;
+    }
+
+    public CommonViewHolder setMargin(int viewId, int left, int right, int top, int bottom) {
+        LinearLayout ll = getView(viewId);
+        LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) ll.getLayoutParams();
+        layoutParams.setMargins(left, right, top, bottom);//4个参数按顺序分别是左上右下
+        ll.setLayoutParams(layoutParams);
         return this;
     }
 

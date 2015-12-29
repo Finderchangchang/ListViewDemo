@@ -1,4 +1,4 @@
-package liuliu.demo.list.control;
+package liuliu.demo.list.control.base;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.util.LruCache;
+import android.view.View;
 import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
@@ -76,6 +77,7 @@ public class ImageLoader {
         mImageView = imageView;
         mDefImg = defImg;
         Bitmap bitmap = getBitmapByCache(url);
+        imageView.setVisibility(View.VISIBLE);
         if (bitmap == null) {
             new NewsAsyncTask(mImageView, url).execute(url);
         } else {

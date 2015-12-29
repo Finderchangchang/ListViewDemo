@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- 底部圆角 白色背景 灰色边框 长方体 -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape>
+            <solid android:color="#FFFFFF" />
+            <corners android:radius="5dp" />
+            <!-- 显示一条虚线，破折线的宽度为dashWith，破折线之间的空隙的宽度为dashGap，当dashGap=0dp时，为实线 -->
+            <stroke
+                android:width="1dp"
+                android:color="#ffa8abad"
+                android:dashGap="1dp"
+                android:dashWidth="1dp" />
+        </shape>
+    </item>
+    <item
+        android:bottom="1dp"
+        android:left="1dp"
+        android:right="1dp"
+        android:top="1dp">
+        <shape>
+            <solid android:color="#FFFFFF" />
+            <corners android:radius="5dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#ffffffff"
+                android:dashGap="1dp"
+                android:dashWidth="1dp" />
+        </shape>
+    </item>
+</layer-list> 

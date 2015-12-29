@@ -1,4 +1,4 @@
-package liuliu.demo.list.control;
+package liuliu.demo.list.control.base;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -39,7 +39,7 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         CommonViewHolder holder = getViewHolder(position, convertView, parent);
-        convert(holder, getItem(position), position);
+        convert(holder, mDatas, position);
         return holder.getConvertView();
     }
 
@@ -47,6 +47,6 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
         return CommonViewHolder.get(mContext, convertView, parent, layoutId, position);
     }
 
-    public abstract void convert(CommonViewHolder holder, T t, int position);
+    public abstract void convert(CommonViewHolder holder, List<T> t, int position);
 
 }

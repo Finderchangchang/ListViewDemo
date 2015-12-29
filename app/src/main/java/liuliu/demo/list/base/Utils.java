@@ -1,79 +1,19 @@
-package liuliu.demo.list.control;
+package liuliu.demo.list.base;
 
 import android.content.Context;
+import android.view.WindowManager;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * 解析json的方法
- * Created by Administrator on 2015/12/25.
+ * Created by Administrator on 2015/12/29.
  */
-public class GoodAnalyze<T> {
-    private Context mIntails;
-    private String mClassName;//类名
-
-    public GoodAnalyze(Context mIntails, String className) {
-        this.mIntails = mIntails;
-        this.mClassName = className;
-    }
-
-    public void getJson(final OnLoadData loadData, String url) {
-        RequestQueue mQueue = Volley.newRequestQueue(mIntails);
-        JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
-                new Response.Listener<JSONObject>() {
-                    List<T> beans = new ArrayList<>();
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            if (response.getString("return").equals("OK")) {//请求成功触发事件
-                                JSONArray json = response.getJSONArray("data");
-                                for (int i = 0; i < json.getJSONArray(0).length(); i++) {
-                                    JSONObject data = (JSONObject) json.getJSONArray(0).get(i);
-                                    T ben = (T) getObject(mClassName, data);
-                                    beans.add(ben);
-                                }
-                                loadData.load(beans);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                , new Response.ErrorListener()
-
-        {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
-        }
-        );
-        mQueue.add(jsonObjectRequest);
-    }
-
-    /**
-     * 获得json
-     */
-    public interface OnLoadData {
-        void load(List list);
-    }
-
-    private Object getObject(String modelName, JSONObject jsonObject) {
+public class Utils {
+    public static Object getObject(String modelName, JSONObject jsonObject) {
         Object objectModel = new Object();
         Field[] fields;
         if (jsonObject != null) {
@@ -131,5 +71,10 @@ public class GoodAnalyze<T> {
         Constructor defcon = cons[0];//得到默认构造器，第0个事默认构造器，无参构造方法
         Object obj = defcon.newInstance();//实例化，得到一个对象
         return obj;
+    }
+
+    public static int getScannerWidth(Context context) {
+        WindowManager windowManager = (WindowManager) context.getSystemService(context.WINDOW_SERVICE);
+        return windowManager.getDefaultDisplay().getWidth();
     }
 }
