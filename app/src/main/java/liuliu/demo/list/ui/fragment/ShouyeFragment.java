@@ -21,7 +21,7 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.base.JSONAnalyze;
-import liuliu.demo.list.control.shouye.ShouYeListener;
+import liuliu.demo.list.control.shouye.ShouyeListener;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
@@ -54,7 +54,7 @@ public class ShouyeFragment extends BaseFragment{
     JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
     CommonAdapter<GoodModel> mAdapters;
-    ShouYeListener mListener;
+    ShouyeListener mListener;
 
     List<ItemModel> mItems;
     List list[];
@@ -103,7 +103,7 @@ public class ShouyeFragment extends BaseFragment{
         mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
         mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
         mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
-        mListener=new ShouYeListener(mIntails);
+        mListener=new ShouyeListener(mIntails);
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -114,13 +114,13 @@ public class ShouyeFragment extends BaseFragment{
     }
 
     private void loadDatas() {
-        mListener.loadTop(new ShouYeListener.OnLoadTop() {
+        mListener.loadTop(new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
                 top_banner.setBannerView(list);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
-        mListener.loadGuanggao(new ShouYeListener.OnLoad() {
+        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
@@ -135,7 +135,7 @@ public class ShouyeFragment extends BaseFragment{
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-        mListener.loadGoodType(new ShouYeListener.OnLoad() {
+        mListener.loadGoodType(new ShouyeListener.OnLoad() {
             @Override
             public void load(int type, List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
@@ -154,7 +154,7 @@ public class ShouyeFragment extends BaseFragment{
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-        mListener.loadHotGood(new ShouYeListener.OnLoadHot() {
+        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
             @Override
             public void load(List[] lists) {
                 list = lists;
