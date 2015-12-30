@@ -91,27 +91,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 开启一个Fragment事务
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         hideFragments(transaction);
-
-        switch (position) {
-            case 0:
-                if (shouye == null) {
-                    // 如果MessageFragment为空，则创建一个并添加到界面上
-                    shouye = new ShouyeFragment();
-                    transaction.add(R.id.frag_ll, shouye);
-                } else {
-                    // 如果MessageFragment不为空，则直接将它显示出来
-                    transaction.show(shouye);
-                }
-            case 1:
-                if (fenlei == null) {
-                    // 如果MessageFragment为空，则创建一个并添加到界面上
-                    fenlei = new FenleiFragment();
-                    transaction.add(R.id.frag_ll, fenlei);
-                } else {
-                    // 如果MessageFragment不为空，则直接将它显示出来
-                    transaction.show(fenlei);
-                }
-                break;
+        if(position==0){
+            if (shouye == null) {
+                // 如果MessageFragment为空，则创建一个并添加到界面上
+                shouye = new ShouyeFragment();
+                transaction.add(R.id.frag_ll, shouye);
+            } else {
+                // 如果MessageFragment不为空，则直接将它显示出来
+                transaction.show(shouye);
+            }
+        }else if(position==1){
+            if (fenlei == null) {
+                // 如果MessageFragment为空，则创建一个并添加到界面上
+                fenlei = new FenleiFragment();
+                transaction.add(R.id.frag_ll, fenlei);
+            } else {
+                // 如果MessageFragment不为空，则直接将它显示出来
+                transaction.show(fenlei);
+            }
         }
         transaction.commit();
     }
