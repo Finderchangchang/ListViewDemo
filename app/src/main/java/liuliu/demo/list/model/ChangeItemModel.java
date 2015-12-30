@@ -6,10 +6,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
- * ĞèÒª½øĞĞ¸Ä±äµÄ×é¼ş¼¯ºÏ
+ * éœ€è¦è¿›è¡Œæ”¹å˜çš„ç»„ä»¶é›†åˆ
  * Created by liuliu on 2015/11/25   15:24
  *
- * @author ÁøÎ°½Ü
+ * @author æŸ³ä¼Ÿæ°
  * @Email 1031066280@qq.com
  */
 public class ChangeItemModel {

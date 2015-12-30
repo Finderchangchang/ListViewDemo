@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
-    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/model/ChangeItemModel.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/model/ItemModel.java" charset="GBK" />
-    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/ui/MainActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/model/ChangeItemModel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/model/ItemModel.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/liuliu/demo/list/ui/activity/MainActivity.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/dingdan_white.png" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/fenlei_white.png" charset="GBK" />
     <file url="file://$PROJECT_DIR$/app/src/main/res/mipmap-xhdpi/gouwuche_white.png" charset="GBK" />

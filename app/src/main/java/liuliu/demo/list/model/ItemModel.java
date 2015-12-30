@@ -4,7 +4,7 @@ package liuliu.demo.list.model;
  *
  * Created by liuliu on 2015/11/25   14:15
  *
- * @author ÁøÎ°½Ü
+ * @author æŸ³ä¼Ÿæ°
  * @Email 1031066280@qq.com
  */
 public class ItemModel {

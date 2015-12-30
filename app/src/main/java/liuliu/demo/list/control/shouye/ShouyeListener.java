@@ -27,6 +27,31 @@ public class ShouyeListener {
         guanggao = new AnalyzeBase(mContext);
     }
 
+    public void loadTop(final OnLoadTop load, String url) {
+        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+            ImageModel model;
+
+            @Override
+            public void load(boolean result, final Object object) {
+                JSONObject json = (JSONObject) object;
+                try {
+                    JSONArray array = json.getJSONArray("data");
+                    List list = new ArrayList();
+                    for (int i = 0; i < array.length(); i++) {
+                        model = new ImageModel();
+                        model.setImage(array.getJSONObject(i).getString("img"));
+                        model.setLink(array.getJSONObject(i).getString("link"));
+                        list.add(model);
+                    }
+                    load.load(list);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, url);
+    }
+
     public void loadGuanggao(final OnLoad load, String url) {
         guanggao.getJson(new AnalyzeBase.OnLoadData() {
             ImageModel model;
@@ -85,7 +110,7 @@ public class ShouyeListener {
                 try {
                     List list;
                     for (int i = 0; i < array.length(); i++) {
-                        list= new ArrayList();
+                        list = new ArrayList();
                         JSONArray arr = array.getJSONArray(i);
                         for (int j = 0; j < arr.length(); j++) {
                             model = new GoodModel();
@@ -108,5 +133,9 @@ public class ShouyeListener {
 
     public interface OnLoadHot {
         void load(List[] lists);
+    }
+
+    public interface OnLoadTop {
+        void load(List list);
     }
 }

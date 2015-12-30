@@ -1,4 +1,4 @@
-package liuliu.demo.list.ui;
+package liuliu.demo.list.ui.activity;
 
 import android.app.FragmentTransaction;
 import android.graphics.Bitmap;
@@ -17,6 +17,8 @@ import liuliu.demo.list.R;
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.ItemModel;
+import liuliu.demo.list.ui.fragment.FenleiFragment;
+import liuliu.demo.list.ui.fragment.ShouyeFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static MainActivity mIntails;
@@ -100,12 +102,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     // 如果MessageFragment不为空，则直接将它显示出来
                     transaction.show(shouye);
                 }
+            case 1:
+                if (fenlei == null) {
+                    // 如果MessageFragment为空，则创建一个并添加到界面上
+                    fenlei = new FenleiFragment();
+                    transaction.add(R.id.frag_ll, fenlei);
+                } else {
+                    // 如果MessageFragment不为空，则直接将它显示出来
+                    transaction.show(fenlei);
+                }
                 break;
         }
         transaction.commit();
     }
 
     private ShouyeFragment shouye;
+    private FenleiFragment fenlei;
 
     /**
      * 将所有的Fragment都置为隐藏状态。
@@ -115,6 +127,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void hideFragments(FragmentTransaction transaction) {
         if (shouye != null) {
             transaction.hide(shouye);
+        }
+        if (fenlei != null) {
+            transaction.hide(fenlei);
         }
     }
 

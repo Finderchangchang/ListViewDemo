@@ -1,7 +1,6 @@
-package liuliu.demo.list.ui;
+package liuliu.demo.list.ui.fragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -21,10 +20,13 @@ import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.base.JSONAnalyze;
 import liuliu.demo.list.control.shouye.ShouyeListener;
+import liuliu.demo.list.model.BannerModel;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.ItemModel;
+import liuliu.demo.list.ui.activity.MainActivity;
+import liuliu.demo.list.view.BannerView;
 import liuliu.demo.list.view.GridLinearLayout;
 
 /**
@@ -41,7 +43,7 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     private GridLinearLayout hotgood_view;
     private GridLinearLayout goodtype_view;
     SwipeRefreshLayout mSwipe;
-
+    BannerView top_banner;
     JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
     CommonAdapter<GoodModel> mAdapters;
@@ -64,6 +66,7 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     LinearLayout hot_zuixin_ll;
     ImageView hot_zuixin_iv;
     TextView hot_zuixin_tv;
+    private int index = 0;
 
     @Override
     public void initViews() {
@@ -74,6 +77,7 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     @Override
     public void initEvents(View view) {
         mItemList = new ArrayList<>();
+        top_banner = (BannerView) view.findViewById(R.id.banner_view_main);
         hot_tejia_rl = (RelativeLayout) view.findViewById(R.id.hot_tejia_rl);
         hot_jingpin_rl = (RelativeLayout) view.findViewById(R.id.hot_jingpin_rl);
         hot_zuixin_rl = (RelativeLayout) view.findViewById(R.id.hot_zuixin_rl);
@@ -102,8 +106,17 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
         goodtype_view = (GridLinearLayout) view.findViewById(R.id.goodtype_main);
         mScrollView = (ScrollView) view.findViewById(R.id.scroll_main);
         mSwipe = (SwipeRefreshLayout) view.findViewById(R.id.srf_layout_main);
+//        List<BannerModel> list = new ArrayList<BannerModel>();
+//        BannerModel b = new BannerModel();
+//        b.setUrl("http://image.zcool.com.cn/56/35/1303967876491.jpg");
+//        list.add(b);
+//        b = new BannerModel();
+//        b.setUrl("http://image.zcool.com.cn/59/54/m_1303967870670.jpg");
+//        list.add(b);
+//        b = new BannerModel();
+//        b.setUrl("http://image.zcool.com.cn/47/19/1280115949992.jpg");
+//        list.add(b);
 
-        mListener = new ShouyeListener(mIntails);
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -114,6 +127,12 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void loadDatas() {
+        mListener.loadTop(new ShouyeListener.OnLoadTop() {
+            @Override
+            public void load(final List list) {
+                top_banner.setBannerView(list);
+            }
+        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
         mListener.loadGuanggao(new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
@@ -129,7 +148,6 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-
         mListener.loadGoodType(new ShouyeListener.OnLoad() {
             @Override
             public void load(int type, List list) {
@@ -201,13 +219,17 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
         pressedModel.getRl().setBackgroundColor(mIntails.getResources().getColor(R.color.white));
         pressedModel.getLl().setVisibility(View.GONE);
         clickItem = position;
-        mAdapters = new CommonAdapter<GoodModel>(mIntails, mList, R.layout.item_good_layout) {
+        mAdapters = new CommonAdapter<GoodModel>(mIntails, mList, R.layout.item_main_hot_good) {
             @Override
             public void convert(CommonViewHolder holder, List<GoodModel> list, int position) {
                 GoodModel model = list.get(position);
-                holder.setImageByUrl(R.id.iv_icon, model.getImage(), R.mipmap.error);
-                holder.setText(R.id.tv_title, model.getName());
-                holder.setText(R.id.tv_desc, model.getPrice());
+                holder.setImageByUrl(R.id.good_iv, model.getImage(), R.mipmap.error);
+                if (model.getName().length() > 8) {
+                    holder.setText(R.id.good_name_tv, model.getName().substring(0, 8) + "..");
+                } else {
+                    holder.setText(R.id.good_name_tv, model.getName());
+                }
+                holder.setText(R.id.good_price_tv, model.getPrice());
             }
         };
         hotgood_view.setAdapter(mAdapters);
