@@ -57,7 +57,6 @@ public class BannerView extends FrameLayout {
 
     public BannerView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
-        // TODO Auto-generated constructor stub
     }
 
     public BannerView(Context context, AttributeSet attrs, int defStyle) {
