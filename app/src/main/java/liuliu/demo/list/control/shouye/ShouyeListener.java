@@ -33,14 +33,13 @@ public class ShouyeListener {
 
             @Override
             public void load(boolean result, final Object object) {
-                JSONObject json = (JSONObject) object;
+                JSONArray json = (JSONArray) object;
                 try {
-                    JSONArray array = json.getJSONArray("data");
                     List list = new ArrayList();
-                    for (int i = 0; i < array.length(); i++) {
+                    for (int i = 0; i < json.length(); i++) {
                         model = new ImageModel();
-                        model.setImage(array.getJSONObject(i).getString("img"));
-                        model.setLink(array.getJSONObject(i).getString("link"));
+                        model.setImage(json.getJSONObject(i).getString("img"));
+                        model.setLink(json.getJSONObject(i).getString("link"));
                         list.add(model);
                     }
                     load.load(list);
