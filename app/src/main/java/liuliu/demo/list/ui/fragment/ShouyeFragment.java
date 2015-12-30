@@ -10,6 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import net.tsz.afinal.annotation.view.CodeNote;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +21,7 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.base.JSONAnalyze;
-import liuliu.demo.list.control.shouye.ShouyeListener;
-import liuliu.demo.list.model.BannerModel;
+import liuliu.demo.list.control.shouye.ShouYeListener;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
@@ -32,39 +33,56 @@ import liuliu.demo.list.view.GridLinearLayout;
 /**
  * Created by Administrator on 2015/12/29.
  */
-public class ShouyeFragment extends BaseFragment implements View.OnClickListener {
-    private GridLinearLayout guanggao_view;
+public class ShouyeFragment extends BaseFragment{
+    @CodeNote(id=R.id.guanggao_main)
+    GridLinearLayout guanggao_view;
     MainActivity mIntails;
     //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
     private String mUrl = "http://api.juheapi.com/japi/toh?v=1.0&month=12&day=24&key=adee859f57cade911dbfe1050666153d";
     //    private String mUrl = "http://api.map.baidu.com/telematics/v3/weather?location=";
     private String mGoodUrl = "http://www.hesq.com.cn/fresh/fore/logic/app/home/product.php";
+    @CodeNote(id=R.id.scroll_main)
     ScrollView mScrollView;
-    private GridLinearLayout hotgood_view;
-    private GridLinearLayout goodtype_view;
+    @CodeNote(id=R.id.hot_good_main)
+    GridLinearLayout hotgood_view;
+    @CodeNote(id=R.id.goodtype_main)
+    GridLinearLayout goodtype_view;
+    @CodeNote(id=R.id.srf_layout_main)
     SwipeRefreshLayout mSwipe;
+    @CodeNote(id=R.id.banner_view_main)
     BannerView top_banner;
     JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
     CommonAdapter<GoodModel> mAdapters;
-    ShouyeListener mListener;
+    ShouYeListener mListener;
 
     List<ItemModel> mItems;
     List list[];
     ChangeItemModel normalModel;
     ChangeItemModel pressedModel;
     int now_preaaed = -1;//当前点击的底部菜单
+    @CodeNote(id=R.id.hot_tejia_rl,click = "onClick")
     RelativeLayout hot_tejia_rl;
+    @CodeNote(id=R.id.hot_tejia_ll)
     LinearLayout hot_tejia_ll;
+    @CodeNote(id=R.id.hot_tejia_iv)
     ImageView hot_tejia_iv;
+    @CodeNote(id=R.id.hot_tejia_tv)
     TextView hot_tejia_tv;
+    @CodeNote(id=R.id.hot_jingpin_rl,click = "onClick")
     RelativeLayout hot_jingpin_rl;
+    @CodeNote(id=R.id.hot_jingpin_ll)
     LinearLayout hot_jingpin_ll;
+    @CodeNote(id=R.id.hot_jingpin_iv)
     ImageView hot_jingpin_iv;
+    @CodeNote(id=R.id.hot_jingpin_tv)
     TextView hot_jingpin_tv;
+    @CodeNote(id=R.id.hot_zuixin_rl,click = "onClick")
     RelativeLayout hot_zuixin_rl;
     LinearLayout hot_zuixin_ll;
+    @CodeNote(id=R.id.hot_zuixin_iv)
     ImageView hot_zuixin_iv;
+    @CodeNote(id=R.id.hot_zuixin_tv)
     TextView hot_zuixin_tv;
     private int index = 0;
 
@@ -75,24 +93,8 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     }
 
     @Override
-    public void initEvents(View view) {
+    public void initEvents() {
         mItemList = new ArrayList<>();
-        top_banner = (BannerView) view.findViewById(R.id.banner_view_main);
-        hot_tejia_rl = (RelativeLayout) view.findViewById(R.id.hot_tejia_rl);
-        hot_jingpin_rl = (RelativeLayout) view.findViewById(R.id.hot_jingpin_rl);
-        hot_zuixin_rl = (RelativeLayout) view.findViewById(R.id.hot_zuixin_rl);
-        hot_tejia_rl.setOnClickListener(this);
-        hot_jingpin_rl.setOnClickListener(this);
-        hot_zuixin_rl.setOnClickListener(this);
-        hot_tejia_ll = (LinearLayout) view.findViewById(R.id.hot_tejia_ll);
-        hot_jingpin_ll = (LinearLayout) view.findViewById(R.id.hot_jingpin_ll);
-        hot_zuixin_ll = (LinearLayout) view.findViewById(R.id.hot_zuixin_ll);
-        hot_tejia_iv = (ImageView) view.findViewById(R.id.hot_tejia_iv);
-        hot_jingpin_iv = (ImageView) view.findViewById(R.id.hot_jingpin_iv);
-        hot_zuixin_iv = (ImageView) view.findViewById(R.id.hot_zuixin_iv);
-        hot_tejia_tv = (TextView) view.findViewById(R.id.hot_tejia_tv);
-        hot_jingpin_tv = (TextView) view.findViewById(R.id.hot_jingpin_tv);
-        hot_zuixin_tv = (TextView) view.findViewById(R.id.hot_zuixin_tv);
         mItemList = new ArrayList<>();
         mItemList.add(new ChangeItemModel(hot_tejia_rl, hot_tejia_ll, hot_tejia_tv, hot_tejia_iv));
         mItemList.add(new ChangeItemModel(hot_jingpin_rl, hot_jingpin_ll, hot_jingpin_tv, hot_jingpin_iv));
@@ -101,22 +103,7 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
         mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
         mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
         mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
-        guanggao_view = (GridLinearLayout) view.findViewById(R.id.guanggao_main);
-        hotgood_view = (GridLinearLayout) view.findViewById(R.id.hot_good_main);
-        goodtype_view = (GridLinearLayout) view.findViewById(R.id.goodtype_main);
-        mScrollView = (ScrollView) view.findViewById(R.id.scroll_main);
-        mSwipe = (SwipeRefreshLayout) view.findViewById(R.id.srf_layout_main);
-//        List<BannerModel> list = new ArrayList<BannerModel>();
-//        BannerModel b = new BannerModel();
-//        b.setUrl("http://image.zcool.com.cn/56/35/1303967876491.jpg");
-//        list.add(b);
-//        b = new BannerModel();
-//        b.setUrl("http://image.zcool.com.cn/59/54/m_1303967870670.jpg");
-//        list.add(b);
-//        b = new BannerModel();
-//        b.setUrl("http://image.zcool.com.cn/47/19/1280115949992.jpg");
-//        list.add(b);
-
+        mListener=new ShouYeListener(mIntails);
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -127,13 +114,13 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
     }
 
     private void loadDatas() {
-        mListener.loadTop(new ShouyeListener.OnLoadTop() {
+        mListener.loadTop(new ShouYeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
                 top_banner.setBannerView(list);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
-        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
+        mListener.loadGuanggao(new ShouYeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
@@ -148,7 +135,7 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-        mListener.loadGoodType(new ShouyeListener.OnLoad() {
+        mListener.loadGoodType(new ShouYeListener.OnLoad() {
             @Override
             public void load(int type, List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
@@ -167,30 +154,11 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
                 mSwipe.setRefreshing(false);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
+        mListener.loadHotGood(new ShouYeListener.OnLoadHot() {
             @Override
             public void load(List[] lists) {
                 list = lists;
                 HotClick(0, lists[0]);
-            }
-        }, mGoodUrl);
-        json = new JSONAnalyze<GoodModel>(mIntails, "GoodModel");
-        json.getJson(new JSONAnalyze.OnLoadData() {
-            @Override
-            public void load(final List list) {
-                mAdapters = new CommonAdapter<GoodModel>(mIntails, list, R.layout.item_good_layout) {
-                    @Override
-                    public void convert(CommonViewHolder holder, List<GoodModel> list, int position) {
-                        GoodModel model = list.get(position);
-                        holder.setImageByUrl(R.id.iv_icon, model.getImage(), R.mipmap.error);
-                        holder.setText(R.id.tv_title, model.getName());
-                        holder.setText(R.id.tv_desc, model.getPrice());
-                    }
-                };
-                hotgood_view.setAdapter(mAdapters);
-                hotgood_view.setColumns(2);
-//                hotgood_view.bindLinearLayout();
-                mSwipe.setRefreshing(false);
             }
         }, mGoodUrl);
     }
@@ -283,8 +251,6 @@ public class ShouyeFragment extends BaseFragment implements View.OnClickListener
         holder.setVisible(R.id.total_left_ll, false);
         holder.setVisible(R.id.total_right_ll, false);
     }
-
-    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.hot_tejia_rl:
