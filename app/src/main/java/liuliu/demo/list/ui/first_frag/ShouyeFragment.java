@@ -1,9 +1,10 @@
-package liuliu.demo.list.ui.fragment;
+package liuliu.demo.list.ui.first_frag;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -33,23 +34,23 @@ import liuliu.demo.list.view.GridLinearLayout;
 /**
  * Created by Administrator on 2015/12/29.
  */
-public class ShouyeFragment extends BaseFragment{
-    @CodeNote(id=R.id.guanggao_main)
+public class ShouyeFragment extends BaseFragment {
+    @CodeNote(id = R.id.guanggao_main)
     GridLinearLayout guanggao_view;
     MainActivity mIntails;
     //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
     private String mUrl = "http://api.juheapi.com/japi/toh?v=1.0&month=12&day=24&key=adee859f57cade911dbfe1050666153d";
     //    private String mUrl = "http://api.map.baidu.com/telematics/v3/weather?location=";
     private String mGoodUrl = "http://www.hesq.com.cn/fresh/fore/logic/app/home/product.php";
-    @CodeNote(id=R.id.scroll_main)
+    @CodeNote(id = R.id.scroll_main)
     ScrollView mScrollView;
-    @CodeNote(id=R.id.hot_good_main)
+    @CodeNote(id = R.id.hot_good_main)
     GridLinearLayout hotgood_view;
-    @CodeNote(id=R.id.goodtype_main)
+    @CodeNote(id = R.id.goodtype_main)
     GridLinearLayout goodtype_view;
-    @CodeNote(id=R.id.srf_layout_main)
+    @CodeNote(id = R.id.srf_layout_main)
     SwipeRefreshLayout mSwipe;
-    @CodeNote(id=R.id.banner_view_main)
+    @CodeNote(id = R.id.banner_view_main)
     BannerView top_banner;
     JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
@@ -61,29 +62,36 @@ public class ShouyeFragment extends BaseFragment{
     ChangeItemModel normalModel;
     ChangeItemModel pressedModel;
     int now_preaaed = -1;//当前点击的底部菜单
-    @CodeNote(id=R.id.hot_tejia_rl,click = "onClick")
+    @CodeNote(id = R.id.hot_tejia_rl, click = "onClick")
     RelativeLayout hot_tejia_rl;
-    @CodeNote(id=R.id.hot_tejia_ll)
+    @CodeNote(id = R.id.hot_tejia_ll)
     LinearLayout hot_tejia_ll;
-    @CodeNote(id=R.id.hot_tejia_iv)
+    @CodeNote(id = R.id.hot_tejia_iv)
     ImageView hot_tejia_iv;
-    @CodeNote(id=R.id.hot_tejia_tv)
+    @CodeNote(id = R.id.hot_tejia_tv)
     TextView hot_tejia_tv;
-    @CodeNote(id=R.id.hot_jingpin_rl,click = "onClick")
+    @CodeNote(id = R.id.hot_jingpin_rl, click = "onClick")
     RelativeLayout hot_jingpin_rl;
-    @CodeNote(id=R.id.hot_jingpin_ll)
+    @CodeNote(id = R.id.hot_jingpin_ll)
     LinearLayout hot_jingpin_ll;
-    @CodeNote(id=R.id.hot_jingpin_iv)
+    @CodeNote(id = R.id.hot_jingpin_iv)
     ImageView hot_jingpin_iv;
-    @CodeNote(id=R.id.hot_jingpin_tv)
+    @CodeNote(id = R.id.hot_jingpin_tv)
     TextView hot_jingpin_tv;
-    @CodeNote(id=R.id.hot_zuixin_rl,click = "onClick")
+    @CodeNote(id = R.id.hot_zuixin_rl, click = "onClick")
     RelativeLayout hot_zuixin_rl;
+    @CodeNote(id = R.id.hot_zuixin_ll)
     LinearLayout hot_zuixin_ll;
-    @CodeNote(id=R.id.hot_zuixin_iv)
+    @CodeNote(id = R.id.hot_zuixin_iv)
     ImageView hot_zuixin_iv;
-    @CodeNote(id=R.id.hot_zuixin_tv)
+    @CodeNote(id = R.id.hot_zuixin_tv)
     TextView hot_zuixin_tv;
+    @CodeNote(id = R.id.no_connect_shouye_ll)
+    LinearLayout no_connect_shouye_ll;
+    @CodeNote(id = R.id.connecting_shouye_ll)
+    LinearLayout connecting_shouye_ll;
+    @CodeNote(id = R.id.no_connect_shouye_btn, click = "onClick")
+    Button no_connect_shouye_btn;
     private int index = 0;
 
     @Override
@@ -103,21 +111,38 @@ public class ShouyeFragment extends BaseFragment{
         mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
         mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
         mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
-        mListener=new ShouyeListener(mIntails);
+        mListener = new ShouyeListener(mIntails);
+        //设置未联网状态页面的宽高
+        no_connect_shouye_ll.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScannerWidth(mIntails), (Utils.getScannerHeight(mIntails)) - 250));
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadDatas();
+                loadUI(true);
             }
         });
-        loadDatas();
+        loadUI(false);
     }
 
-    private void loadDatas() {
+    private void loadUI(boolean isRefresh) {
+        if (Utils.isNetworkConnected(mIntails)) {//网络状态良好
+            connecting_shouye_ll.setVisibility(View.VISIBLE);
+            no_connect_shouye_ll.setVisibility(View.GONE);
+            loadDatas(isRefresh);
+        } else {//无网络
+            no_connect_shouye_ll.setVisibility(View.VISIBLE);
+            connecting_shouye_ll.setVisibility(View.GONE);
+            mSwipe.setRefreshing(false);
+        }
+    }
+
+    private void loadDatas(final boolean isRefresh) {
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
-                top_banner.setBannerView(list);
+                if (list.size() > 0) {
+                    top_banner.setBannerView(list);
+                    top_banner.setVisibility(View.VISIBLE);
+                }
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
         mListener.loadGuanggao(new ShouyeListener.OnLoad() {
@@ -126,7 +151,7 @@ public class ShouyeFragment extends BaseFragment{
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
                     @Override
                     public void convert(CommonViewHolder holder, List<ImageModel> imageModel, int position) {
-                        loadGG(mIntails, type, holder, list, position);
+                        loadGG(mIntails, type, holder, list, position, isRefresh);
                     }
                 };
                 guanggao_view.setAdapter(mAdapter);
@@ -207,7 +232,7 @@ public class ShouyeFragment extends BaseFragment{
     }
 
     //加载广告布局
-    private void loadGG(Context context, int type, CommonViewHolder holder, final List list, int position) {
+    private void loadGG(Context context, int type, CommonViewHolder holder, final List list, int position, boolean isRefresh) {
         int width = Utils.getScannerWidth(context);//获得屏幕宽度
         switch (type) {
             case 3:
@@ -251,6 +276,7 @@ public class ShouyeFragment extends BaseFragment{
         holder.setVisible(R.id.total_left_ll, false);
         holder.setVisible(R.id.total_right_ll, false);
     }
+
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.hot_tejia_rl:
@@ -261,6 +287,10 @@ public class ShouyeFragment extends BaseFragment{
                 break;
             case R.id.hot_zuixin_rl:
                 HotClick(2, list[2]);
+                break;
+            case R.id.no_connect_shouye_btn://刷新按钮
+                mSwipe.setRefreshing(true);//开始刷新
+                loadUI(false);
                 break;
         }
     }

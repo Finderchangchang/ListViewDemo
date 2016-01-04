@@ -17,8 +17,8 @@ import liuliu.demo.list.R;
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.ItemModel;
-import liuliu.demo.list.ui.fragment.FenleiFragment;
-import liuliu.demo.list.ui.fragment.ShouyeFragment;
+import liuliu.demo.list.ui.first_frag.FenleiFragment;
+import liuliu.demo.list.ui.first_frag.ShouyeFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static MainActivity mIntails;

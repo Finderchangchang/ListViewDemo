@@ -1,12 +1,14 @@
 package liuliu.demo.list.base;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.FinalDb;
 
 /**
  * Created by Administrator on 2015/11/25.

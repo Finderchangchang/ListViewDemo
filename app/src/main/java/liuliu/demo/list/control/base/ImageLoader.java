@@ -1,5 +1,6 @@
 package liuliu.demo.list.control.base;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -10,14 +11,18 @@ import android.util.LruCache;
 import android.view.View;
 import android.widget.ImageView;
 
+import net.tsz.afinal.FinalDb;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import liuliu.demo.list.R;
+import liuliu.demo.list.model.BannerModel;
 
 /**
  * 加载图片
@@ -27,8 +32,12 @@ public class ImageLoader {
     private ImageView mImageView;
     private int mDefImg;
     private LruCache<String, Bitmap> mCaches;
+    private Context mContext;
+    private FinalDb mDB;
 
-    public ImageLoader() {
+    public ImageLoader(Context context) {
+        this.mContext = context;
+        mDB = FinalDb.create(mContext);
         //获得最大内存
         int maxMemory = (int) Runtime.getRuntime().maxMemory();
         int cacheSize = maxMemory / 4;
@@ -78,6 +87,7 @@ public class ImageLoader {
         mDefImg = defImg;
         Bitmap bitmap = getBitmapByCache(url);
         imageView.setVisibility(View.VISIBLE);
+        //从数据库查是不是有该路径，存在不加载图片
         if (bitmap == null) {
             new NewsAsyncTask(mImageView, url).execute(url);
         } else {
@@ -127,7 +137,6 @@ public class ImageLoader {
             if (bitmap != null) {
                 addBitmapToCache(url, bitmap);
             }
-
             if (mDefUrl != null) {
                 def_bitmap = getBitmapByCache(mDefUrl);
                 if (def_bitmap == null) {

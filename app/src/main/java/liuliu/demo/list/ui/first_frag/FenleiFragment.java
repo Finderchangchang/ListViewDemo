@@ -1,23 +1,22 @@
-package liuliu.demo.list.ui.fragment;
+package liuliu.demo.list.ui.first_frag;
 
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
-import android.support.v7.widget.RecyclerView;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
+import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.fenlei.FenLeiListener;
-import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.TypeModel;
+import liuliu.demo.list.ui.activity.DetailListsActivity;
 import liuliu.demo.list.ui.activity.MainActivity;
 import liuliu.demo.list.view.GridLinearLayout;
 
@@ -34,10 +33,14 @@ public class FenleiFragment extends BaseFragment {
     FenLeiListener mListener;
     MainActivity mActivity;
     CommonAdapter mAdapter;
+    MainActivity mIntails;
+    Utils mUtils;
 
     @Override
     public void initViews() {
         setContentView(R.layout.frag_fenlei);
+        mIntails = MainActivity.mIntails;
+        mUtils = new Utils(mIntails);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class FenleiFragment extends BaseFragment {
         mAdapter = new CommonAdapter<TypeModel>(mActivity, list, R.layout.item_good_types) {
             @Override
             public void convert(CommonViewHolder holder, List<TypeModel> models, final int position) {
-                TypeModel model=models.get(position);
+                TypeModel model = models.get(position);
                 holder.setImageByUrl(R.id.good_iv, model.getImage());
                 String title = "全部商品";
                 if (position != 0) {
@@ -111,42 +114,22 @@ public class FenleiFragment extends BaseFragment {
         gridview.bindLinearLayout();
         gridview.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
             @Override
-            public void onCellClick(int index) {
-//                mActivity.mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
-//                    @Override
-//                    public void put(Intent intent) {
-//                        GoodTypeModel model = (GoodTypeModel) list.get(position);
-//                        GoodTypeModel first = (GoodTypeModel) list.get(0);
-//                        String link;
-//                        if (position > 0) {
-//                            link = "bid=" + first.getSid() + "&sid=" + model.getSid();
-//                        } else {
-//                            link = "bid=" + first.getSid();
-//                        }
-//                        intent.putExtra("desc", "spfl?" + link);
-//                    }
-//                });
+            public void onCellClick(final int index) {
+                mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+                    @Override
+                    public void put(Intent intent) {
+                        TypeModel model = (TypeModel) list.get(index);
+                        TypeModel first = (TypeModel) list.get(0);
+                        String link;
+                        if (index > 0) {
+                            link = "bid=" + first.getSid() + "&sid=" + model.getSid();
+                        } else {
+                            link = "bid=" + first.getSid();
+                        }
+                        intent.putExtra("desc", "spfl?" + link);
+                    }
+                });
             }
         });
-//        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, final int position, final long id) {
-//                mActivity.mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
-//                    @Override
-//                    public void put(Intent intent) {
-//                        GoodTypeModel model = (GoodTypeModel) list.get(position);
-//                        GoodTypeModel first = (GoodTypeModel) list.get(0);
-//                        String link;
-//                        if (position > 0) {
-//                            link = "bid=" + first.getSid() + "&sid=" + model.getSid();
-//                        } else {
-//                            link = "bid=" + first.getSid();
-//                        }
-//                        intent.putExtra("desc", "spfl?" + link);
-//                    }
-//                });
-//            }
-//        });
-//        adapterBase.notifyDataSetChanged();
     }
 }

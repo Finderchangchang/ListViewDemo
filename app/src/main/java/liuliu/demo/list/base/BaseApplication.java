@@ -3,6 +3,8 @@ package liuliu.demo.list.base;
 import android.app.Application;
 import android.content.Context;
 
+import in.srain.cube.Cube;
+
 /**
  * Created by Administrator on 2015/12/25.
  */
@@ -13,6 +15,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Cube.onCreate(this);
         sInstance = this;
         context = getApplicationContext();
     }

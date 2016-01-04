@@ -11,6 +11,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import net.tsz.afinal.FinalDb;
+
+import java.util.List;
+
+import liuliu.demo.list.model.BannerModel;
 import liuliu.demo.list.model.ImageModel;
 
 /**
@@ -24,15 +29,19 @@ public class CommonViewHolder {
     private int mPosition;
     private View mConvertView;
     private ImageLoader mImageLoader;
+    private Context mContext;
+    FinalDb mDB;
 
     private CommonViewHolder(Context context, ViewGroup parent, int layoutId,
                              int position) {
+        this.mContext = context;
         this.mPosition = position;
         this.mViews = new SparseArray<View>();
+//        mDB = FinalDb.create(mContext);
         mConvertView = LayoutInflater.from(context).inflate(layoutId, parent,
                 false);
         mConvertView.setTag(this);
-        mImageLoader = new ImageLoader();
+        mImageLoader = new ImageLoader(mContext);
     }
 
     /**
@@ -150,7 +159,7 @@ public class CommonViewHolder {
     }
 
     public CommonViewHolder setImageByUrl(int viewId, Object model) {
-        ImageModel m=(ImageModel)model;
+        ImageModel m = (ImageModel) model;
         mImageLoader.showImageBuThread(setImageTag(viewId, m.getImage()), m.getImage(), 0);
         return this;
     }
