@@ -62,15 +62,6 @@ public class BannerView extends FrameLayout {
     public BannerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         this.context = context;
-//        imageViewList = new ArrayList<ImageView>();
-//        dotViewsList = new ArrayList<View>();
-//
-//        //bannerModelList = list;
-//        initUI(context);
-//
-//        if (isAutoPlay) {
-//            startPlay();
-//        }
     }
 
     public void setBannerView(List<ImageModel> list) {
@@ -237,6 +228,4 @@ public class BannerView extends FrameLayout {
             }
         }
     }
-
-
 }

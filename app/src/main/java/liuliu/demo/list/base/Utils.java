@@ -2,6 +2,7 @@ package liuliu.demo.list.base;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
@@ -19,7 +20,7 @@ import java.lang.reflect.Method;
  * Created by Administrator on 2015/12/29.
  */
 public class Utils {
-    private Context mContext;
+    private Context mContext = BaseApplication.getContext();
 
     public Utils(Context mContext) {
         this.mContext = mContext;
@@ -71,22 +72,19 @@ public class Utils {
         return objectModel;
     }
 
+    public static Bitmap getBitmapFromRes(int resId) {
+        Resources res = BaseApplication.getContext().getResources();
+        return BitmapFactory.decodeResource(res, resId);
+    }
+
     public static Bitmap readBitMap(Context context, int resId) {
-
         BitmapFactory.Options opt = new BitmapFactory.Options();
-
         opt.inPreferredConfig = Bitmap.Config.RGB_565;
-
         opt.inPurgeable = true;
-
         opt.inInputShareable = true;
-
         //  获取资源图片
-
         InputStream is = context.getResources().openRawResource(resId);
-
         return BitmapFactory.decodeStream(is, null, opt);
-
     }
 
     //创建的model对象，字段名，字段值

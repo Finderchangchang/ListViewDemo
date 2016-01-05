@@ -1,7 +1,9 @@
 package liuliu.demo.list.control.base;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import net.tsz.afinal.FinalDb;
 
 import java.util.List;
 
+import liuliu.demo.list.R;
+import liuliu.demo.list.control.base.image.ImageCacheManager;
 import liuliu.demo.list.model.BannerModel;
 import liuliu.demo.list.model.ImageModel;
 
@@ -162,6 +166,19 @@ public class CommonViewHolder {
         ImageModel m = (ImageModel) model;
         mImageLoader.showImageBuThread(setImageTag(viewId, m.getImage()), m.getImage(), 0);
         return this;
+    }
+
+    public CommonViewHolder loadImageByUrl(int viewId, Object model) {
+        ImageModel m = (ImageModel) model;
+        ImageView view = getView(viewId);
+        view.setVisibility(View.VISIBLE);
+        ImageCacheManager.loadImage(m.getImage(), view, getBitmapFromRes(R.mipmap.ic_launcher), getBitmapFromRes(R.mipmap.ic_launcher));
+        return this;
+    }
+
+    public Bitmap getBitmapFromRes(int resId) {
+        Resources res = mContext.getResources();
+        return BitmapFactory.decodeResource(res, resId);
     }
 
     /**

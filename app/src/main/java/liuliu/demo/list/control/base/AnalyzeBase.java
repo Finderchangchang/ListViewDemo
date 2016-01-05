@@ -34,7 +34,6 @@ public class AnalyzeBase {
         RequestQueue mQueue = Volley.newRequestQueue(mIntails);
         JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
                 new Response.Listener<JSONObject>() {
-
                     @Override
                     public void onResponse(JSONObject response) {
                         try {

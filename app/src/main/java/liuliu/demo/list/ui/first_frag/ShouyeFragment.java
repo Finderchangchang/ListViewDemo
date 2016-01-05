@@ -10,6 +10,13 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bigkoo.convenientbanner.ConvenientBanner;
+import com.bigkoo.convenientbanner.adapter.CBPageAdapter;
+import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
+import com.bigkoo.convenientbanner.holder.Holder;
+import com.bigkoo.convenientbanner.listener.OnItemClickListener;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
@@ -22,6 +29,7 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.base.JSONAnalyze;
+import liuliu.demo.list.control.base.image.ImageCacheManager;
 import liuliu.demo.list.control.shouye.ShouyeListener;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
@@ -50,8 +58,8 @@ public class ShouyeFragment extends BaseFragment {
     GridLinearLayout goodtype_view;
     @CodeNote(id = R.id.srf_layout_main)
     SwipeRefreshLayout mSwipe;
-    @CodeNote(id = R.id.banner_view_main)
-    BannerView top_banner;
+    //    @CodeNote(id = R.id.banner_view_main)
+//    BannerView top_banner;
     JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
     CommonAdapter<GoodModel> mAdapters;
@@ -93,6 +101,8 @@ public class ShouyeFragment extends BaseFragment {
     @CodeNote(id = R.id.no_connect_shouye_btn, click = "onClick")
     Button no_connect_shouye_btn;
     private int index = 0;
+    @CodeNote(id = R.id.convenientBanner)
+    ConvenientBanner convenientBanner;//顶部广告栏控件
 
     @Override
     public void initViews() {
@@ -117,41 +127,46 @@ public class ShouyeFragment extends BaseFragment {
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadUI(true);
+                loadDatas();
             }
         });
-        loadUI(false);
+        loadDatas();
     }
 
-    private void loadUI(boolean isRefresh) {
-        if (Utils.isNetworkConnected(mIntails)) {//网络状态良好
-            connecting_shouye_ll.setVisibility(View.VISIBLE);
-            no_connect_shouye_ll.setVisibility(View.GONE);
-            loadDatas(isRefresh);
-        } else {//无网络
-            no_connect_shouye_ll.setVisibility(View.VISIBLE);
-            connecting_shouye_ll.setVisibility(View.GONE);
-            mSwipe.setRefreshing(false);
-        }
-    }
 
-    private void loadDatas(final boolean isRefresh) {
+    private void loadDatas() {
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
                 if (list.size() > 0) {
-                    top_banner.setBannerView(list);
-                    top_banner.setVisibility(View.VISIBLE);
+                    convenientBanner.setPages(new CBViewHolderCreator<LocalImageHolderView>() {
+                        @Override
+                        public LocalImageHolderView createHolder() {
+                            return new LocalImageHolderView();
+                        }
+                    }, list).setPageIndicator(new int[]{R.drawable.ic_page_indicator, R.drawable.ic_page_indicator_focused}).setOnItemClickListener(new OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position) {
+                            Toast.makeText(mIntails, "position:" + position, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+//                    top_banner.setBannerView(list);
+//                    top_banner.setVisibility(View.VISIBLE);
+                    connecting_shouye_ll.setVisibility(View.VISIBLE);
+                    no_connect_shouye_ll.setVisibility(View.GONE);
                 }
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
+
         mListener.loadGuanggao(new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
                     @Override
                     public void convert(CommonViewHolder holder, List<ImageModel> imageModel, int position) {
-                        loadGG(mIntails, type, holder, list, position, isRefresh);
+                        loadGG(mIntails, type, holder, list, position);
+                        connecting_shouye_ll.setVisibility(View.VISIBLE);
+                        no_connect_shouye_ll.setVisibility(View.GONE);
                     }
                 };
                 guanggao_view.setAdapter(mAdapter);
@@ -167,7 +182,7 @@ public class ShouyeFragment extends BaseFragment {
                     @Override
                     public void convert(CommonViewHolder holder, List<ImageModel> list, int position) {
                         ImageModel model = list.get(position);
-                        holder.setImageByUrl(R.id.type_iv, model.getImage(), R.mipmap.error);
+                        holder.loadImageByUrl(R.id.type_iv, model);
                         holder.setText(R.id.type_title_tv, model.getTitle());
                         holder.setText(R.id.type_desc1_tv, model.getT1());
                         holder.setText(R.id.type_desc2_tv, model.getT2());
@@ -232,24 +247,24 @@ public class ShouyeFragment extends BaseFragment {
     }
 
     //加载广告布局
-    private void loadGG(Context context, int type, CommonViewHolder holder, final List list, int position, boolean isRefresh) {
+    private void loadGG(Context context, int type, CommonViewHolder holder, final List list, int position) {
         int width = Utils.getScannerWidth(context);//获得屏幕宽度
         switch (type) {
             case 3:
                 if (position == 0) {
                     holder.setHeight(R.id.total_left_ll, (width - 15) / 2);
-                    holder.setImageByUrl(R.id.total_left_one_iv, list.get(0));
-                    holder.setImageByUrl(R.id.total_right_two_iv, list.get(3));
-                    holder.setImageByUrl(R.id.total_right_three_iv, list.get(4));
+                    holder.loadImageByUrl(R.id.total_left_one_iv, list.get(0));
+                    holder.loadImageByUrl(R.id.total_right_two_iv, list.get(3));
+                    holder.loadImageByUrl(R.id.total_right_three_iv, list.get(4));
                     holder.setMargin(R.id.total_right_ll_right, 0, 0, 0, 0);
                     holder.setVisible(R.id.total_right_ll_right, true);
                 } else if (position == 1) {
                     holder.setHeight(R.id.total_left_ll, (width - 20) / 4);
                     holder.setVisible(R.id.total_right_ll_right, true);
-                    holder.setImageByUrl(R.id.total_left_one_iv, list.get(1));
-                    holder.setImageByUrl(R.id.total_left_two_iv, list.get(2));
-                    holder.setImageByUrl(R.id.total_right_one_iv, list.get(5));
-                    holder.setImageByUrl(R.id.total_right_two_iv, list.get(6));
+                    holder.loadImageByUrl(R.id.total_left_one_iv, list.get(1));
+                    holder.loadImageByUrl(R.id.total_left_two_iv, list.get(2));
+                    holder.loadImageByUrl(R.id.total_right_one_iv, list.get(5));
+                    holder.loadImageByUrl(R.id.total_right_two_iv, list.get(6));
                 } else {
                     setOtherGone(holder);
                 }
@@ -290,8 +305,36 @@ public class ShouyeFragment extends BaseFragment {
                 break;
             case R.id.no_connect_shouye_btn://刷新按钮
                 mSwipe.setRefreshing(true);//开始刷新
-                loadUI(false);
+                loadDatas();
                 break;
         }
+    }
+
+    public class LocalImageHolderView implements Holder<ImageModel> {
+        private ImageView imageView;
+
+        @Override
+        public View createView(Context context) {
+            imageView = new ImageView(context);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            return imageView;
+        }
+
+        @Override
+        public void UpdateUI(Context context, final int position, ImageModel data) {
+            ImageCacheManager.loadImage(data.getImage(), imageView, Utils.getBitmapFromRes(R.mipmap.ic_launcher), Utils.getBitmapFromRes(R.mipmap.ic_default_adimage));
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        convenientBanner.startTurning(5000);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        convenientBanner.stopTurning();
     }
 }

@@ -15,6 +15,7 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.fenlei.FenLeiListener;
+import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.TypeModel;
 import liuliu.demo.list.ui.activity.DetailListsActivity;
 import liuliu.demo.list.ui.activity.MainActivity;
@@ -101,7 +102,9 @@ public class FenleiFragment extends BaseFragment {
             @Override
             public void convert(CommonViewHolder holder, List<TypeModel> models, final int position) {
                 TypeModel model = models.get(position);
-                holder.setImageByUrl(R.id.good_iv, model.getImage());
+                ImageModel image = new ImageModel();
+                image.setImage(model.getImage());
+                holder.loadImageByUrl(R.id.good_iv, image);
                 String title = "全部商品";
                 if (position != 0) {
                     title = model.getName();

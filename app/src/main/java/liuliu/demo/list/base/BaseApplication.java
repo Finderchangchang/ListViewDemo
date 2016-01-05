@@ -9,23 +9,23 @@ import in.srain.cube.Cube;
  * Created by Administrator on 2015/12/25.
  */
 public class BaseApplication extends Application {
-    private static BaseApplication sInstance;
+    public static BaseApplication myApplication;
     private static Context context;
+
+    public static BaseApplication newInstance() {
+        return myApplication;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
         Cube.onCreate(this);
-        sInstance = this;
+        myApplication = this;
         context = getApplicationContext();
     }
 
     public static Context getContext() {
         return context;
-    }
-
-    public static BaseApplication getInstance() {
-        return sInstance;
     }
 
     //系统处于资源匮乏的状态
