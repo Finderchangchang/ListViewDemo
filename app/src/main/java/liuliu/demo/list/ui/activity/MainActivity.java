@@ -91,16 +91,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 开启一个Fragment事务
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         hideFragments(transaction);
-        if(position==0){
+        if (position == 0) {
             if (shouye == null) {
                 // 如果MessageFragment为空，则创建一个并添加到界面上
                 shouye = new ShouyeFragment();
+                shouye.setOnItemClick(new ShouyeFragment.OnItemClick() {
+                    @Override
+                    public void onItemClick(Object value) {
+                        now_pressed = (Integer) value;
+                        setItem(now_pressed);
+                    }
+                });
                 transaction.add(R.id.frag_ll, shouye);
             } else {
                 // 如果MessageFragment不为空，则直接将它显示出来
                 transaction.show(shouye);
             }
-        }else if(position==1){
+        } else if (position == 1) {
             if (fenlei == null) {
                 // 如果MessageFragment为空，则创建一个并添加到界面上
                 fenlei = new FenleiFragment();

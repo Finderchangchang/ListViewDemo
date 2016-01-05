@@ -1,4 +1,4 @@
-package liuliu.demo.list.control.shouye;
+package liuliu.demo.list.control.manager;
 
 import android.content.Context;
 
@@ -13,7 +13,6 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.AnalyzeBase;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
-import liuliu.demo.list.model.NewsBean;
 
 /**
  * Created by Administrator on 2015/12/29.
@@ -30,7 +29,6 @@ public class ShouyeListener {
     public void loadTop(final OnLoadTop load, String url) {
         guanggao.getJson(new AnalyzeBase.OnLoadData() {
             ImageModel model;
-
             @Override
             public void load(boolean result, final Object object) {
                 JSONArray json = (JSONArray) object;

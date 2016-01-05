@@ -10,7 +10,13 @@ import java.util.List;
 
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
+import liuliu.demo.list.control.base.CommonAdapter;
+import liuliu.demo.list.control.base.CommonViewHolder;
+import liuliu.demo.list.control.manager.FenLeiListener;
+import liuliu.demo.list.control.manager.GoodListListener;
+import liuliu.demo.list.model.GoodDetailModel;
 import liuliu.demo.list.model.GoodModel;
+import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.ui.activity.DetailListsActivity;
 import liuliu.demo.list.view.LoadListView;
 
@@ -21,31 +27,39 @@ import liuliu.demo.list.view.LoadListView;
 public class FenLeiListFragment extends BaseFragment {
     @CodeNote(id = R.id.type_list_grid_view)
     LoadListView listView;
-//    @CodeNote(id = R.id.type_list_iv)
+    GoodListListener mListener;
+    //    @CodeNote(id = R.id.type_list_iv)
 //    MyItemView title;
-//    CommonAdapters adapterBase;
-//    TypeListListener<GoodModel> listListener;
+    CommonAdapter<GoodDetailModel> mAdapters;
+    //    TypeListListener<GoodModel> listListener;
     int page = 1;
     DetailListsActivity mIntails;
-    String term = "";//查询显示的
-    List<GoodModel> mGoods;
+    public String term = "";//查询显示的
+    List<GoodDetailModel> mGoods;
     private boolean isBottom = false;//是否滑动到最底部
-
     @CodeNote(id = R.id.is_loading)
     LinearLayout is_loading;//正在加载
+    String link;
 
     @Override
     public void initViews() {
         setContentView(R.layout.frag_type_list);
         mIntails = DetailListsActivity.mIntails;
-//        listListener = new TypeListListener(this, mIntails);
-        term = "?page=" + page + "&number=10" + jiexiLink(mIntails.getDesc().split("\\?")[1]);
-//        listListener.loadList(term, "GoodModel");//页面加载的时候加载数据
+        mListener = new GoodListListener(mIntails);
+        mGoods = new ArrayList<>();
+        String title = mIntails.getDesc().split("&")[0];
+        link = mIntails.getDesc().split("&")[1].split("\\?")[1];
+        term = "http://www.hesq.com.cn/fresh/fore/logic/app/product/list.php";
+        loads();
     }
 
-    @Override
-    public void initEvents() {
-
+    private void loads() {
+        mListener.loadList(new GoodListListener.OnLoad() {
+            @Override
+            public void load(boolean tail, List<GoodDetailModel> list) {
+                loadGoodList(tail, list);
+            }
+        }, this.term + "?page=" + page + "&number=10" + jiexiLink(link));
     }
 
     /**
@@ -54,61 +68,66 @@ public class FenLeiListFragment extends BaseFragment {
      * @param result 是否滑动到底部（true,到达底部。false,没有到达底部）
      * @param list   需要加载的数据
      */
-    public void loadGoodList(boolean result, List<GoodModel> list) {
+    public void loadGoodList(boolean result, List<GoodDetailModel> list) {
         isBottom = result;
-        for (GoodModel model : list) {
+        for (GoodDetailModel model : list) {
             mGoods.add(model);
         }
-        showList(mGoods);
-        page++;
+        loadUi(mGoods);
+        page = page + 1;
         listView.loadComplete(isBottom);//关闭底部进度条
     }
 
-    /**
-     * @param list 商品信息集合
-     */
-    private void showList(List<GoodModel> list) {
+    private void loadUi(List list) {
         is_loading.setVisibility(View.GONE);
-//        if (adapterBase == null) {
-//            adapterBase = new CommonAdapters<GoodModel>(mIntails, list, R.layout.item_good_desc) {
-//                @Override
-//                public void convert(CommonViewHolders holder, GoodModel goodModel, int position) {
-//                    holder.loadImage(R.id.good_iv, imageLoader, goodModel.getImage());
-//                    holder.setText(R.id.item_good_list_name, goodModel.getName());
-//                    holder.setText(R.id.item_good_list_desc, goodModel.getFeature());
-//                    holder.setText(R.id.item_good_list_month_sales, goodModel.getSales());
-//                    holder.setText(R.id.item_good_list_stock, goodModel.getStock());
-//                    holder.setText(R.id.item_good_list_price, goodModel.getPrice());
-//                    if (goodModel.isSales() || goodModel.isRecom() || goodModel.isNew() || goodModel.isLimit() ||
-//                            goodModel.isRush() || goodModel.isArea() || goodModel.isPresent() || goodModel.isDrive()) {
-//                        holder.setVisible(R.id.item_good_list_type_ll, true);
-//                    } else {
-//                        holder.setVisible(R.id.item_good_list_type_ll, false);
-//                    }
-//                    holder.setVisible(R.id.cuxiao_btn, goodModel.isSales());
-//                    holder.setVisible(R.id.tuijian_btn, goodModel.isRecom());
-//                    holder.setVisible(R.id.xinpin_btn, goodModel.isNew());
-//                    holder.setVisible(R.id.xiangou_btn, goodModel.isLimit());
-//                    holder.setVisible(R.id.xianshi_btn, goodModel.isRush());
-//                    holder.setVisible(R.id.tejia_btn, goodModel.isArea());
-//                    holder.setVisible(R.id.maizeng_btn, goodModel.isPresent());
-//                    holder.setVisible(R.id.maiyou_btn, goodModel.isDrive());
-//                }
-//            };
-//            listView.setAdapter(adapterBase);
-//            //上划加载更多数据
-//            listView.setOnLoadListener(new LoadListView.onLoadListener() {
-//                @Override
-//                public void onLoad() {
-//                    if (!isBottom) {
-//                        listListener.loadList("?page=" + page + "&number=10&" + mIntails.getDesc().split("\\?")[1], "GoodModel");
-//                    }
-//                }
-//            });
-//            adapterBase.notifyDataSetChanged();
-//        } else {
-//            adapterBase.notifyDataSetChanged();
-//        }
+        if (mAdapters == null) {
+            mAdapters = new CommonAdapter<GoodDetailModel>(mIntails, list, R.layout.item_good_desc) {
+                @Override
+                public void convert(CommonViewHolder holder, List<GoodDetailModel> lists, int position) {
+                    GoodDetailModel goodModel = lists.get(position);
+                    ImageModel model = new ImageModel();
+                    model.setImage(goodModel.getImage());
+                    holder.loadImageByUrl(R.id.good_iv, model);
+                    holder.setText(R.id.item_good_list_name, goodModel.getName());
+                    holder.setText(R.id.item_good_list_desc, goodModel.getFeature());
+                    holder.setText(R.id.item_good_list_month_sales, goodModel.getSales());
+                    holder.setText(R.id.item_good_list_stock, goodModel.getStock());
+                    holder.setText(R.id.item_good_list_price, goodModel.getPrice());
+                    if (goodModel.isIsSales() || goodModel.isIsRecom() || goodModel.isIsNew() || goodModel.isIsLimit() ||
+                            goodModel.isIsRush() || goodModel.isIsArea() || goodModel.isIsPresent() || goodModel.isIsDrive()) {
+                        holder.setVisible(R.id.item_good_list_type_ll, true);
+                    } else {
+                        holder.setVisible(R.id.item_good_list_type_ll, false);
+                    }
+                    holder.setVisible(R.id.cuxiao_btn, goodModel.isIsSales());
+                    holder.setVisible(R.id.tuijian_btn, goodModel.isIsRecom());
+                    holder.setVisible(R.id.xinpin_btn, goodModel.isIsNew());
+                    holder.setVisible(R.id.xiangou_btn, goodModel.isIsLimit());
+                    holder.setVisible(R.id.xianshi_btn, goodModel.isIsRush());
+                    holder.setVisible(R.id.tejia_btn, goodModel.isIsArea());
+                    holder.setVisible(R.id.maizeng_btn, goodModel.isIsPresent());
+                    holder.setVisible(R.id.maiyou_btn, goodModel.isIsDrive());
+                }
+            };
+            listView.setAdapter(mAdapters);
+            //上划加载更多数据
+            listView.setOnLoadListener(new LoadListView.onLoadListener() {
+                @Override
+                public void onLoad() {
+                    if (!isBottom) {
+                        loads();
+                    }
+                }
+            });
+            mAdapters.notifyDataSetChanged();
+        } else {
+            mAdapters.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void initEvents() {
+
     }
 
     /**

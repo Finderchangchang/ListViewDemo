@@ -1,6 +1,7 @@
 package liuliu.demo.list.ui.first_frag;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
-import com.bigkoo.convenientbanner.adapter.CBPageAdapter;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
@@ -28,15 +28,14 @@ import liuliu.demo.list.base.BaseFragment;
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
-import liuliu.demo.list.control.base.JSONAnalyze;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
-import liuliu.demo.list.control.shouye.ShouyeListener;
+import liuliu.demo.list.control.manager.ShouyeListener;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.ItemModel;
+import liuliu.demo.list.ui.activity.DetailListsActivity;
 import liuliu.demo.list.ui.activity.MainActivity;
-import liuliu.demo.list.view.BannerView;
 import liuliu.demo.list.view.GridLinearLayout;
 
 /**
@@ -46,6 +45,15 @@ public class ShouyeFragment extends BaseFragment {
     @CodeNote(id = R.id.guanggao_main)
     GridLinearLayout guanggao_view;
     MainActivity mIntails;
+    Utils mUtils;
+    @CodeNote(id = R.id.main_good_type_ll, click = "onClick")
+    LinearLayout main_good_type_ll;
+    @CodeNote(id = R.id.main_my_order_ll, click = "onClick")
+    LinearLayout main_my_order_ll;
+    @CodeNote(id = R.id.main_user_unit_ll, click = "onClick")
+    LinearLayout main_user_unit_ll;
+    @CodeNote(id = R.id.main_shoppingcar_ll, click = "onClick")
+    LinearLayout main_shoppingcar_ll;
     //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
     private String mUrl = "http://api.juheapi.com/japi/toh?v=1.0&month=12&day=24&key=adee859f57cade911dbfe1050666153d";
     //    private String mUrl = "http://api.map.baidu.com/telematics/v3/weather?location=";
@@ -58,9 +66,6 @@ public class ShouyeFragment extends BaseFragment {
     GridLinearLayout goodtype_view;
     @CodeNote(id = R.id.srf_layout_main)
     SwipeRefreshLayout mSwipe;
-    //    @CodeNote(id = R.id.banner_view_main)
-//    BannerView top_banner;
-    JSONAnalyze<GoodModel> json;
     CommonAdapter<ImageModel> mAdapter;
     CommonAdapter<GoodModel> mAdapters;
     ShouyeListener mListener;
@@ -103,11 +108,15 @@ public class ShouyeFragment extends BaseFragment {
     private int index = 0;
     @CodeNote(id = R.id.convenientBanner)
     ConvenientBanner convenientBanner;//顶部广告栏控件
+    OnItemClick mClick;
+    @CodeNote(id = R.id.fenlei_xiangqing_ll, click = "onClick")
+    LinearLayout xiangqing_ll;
 
     @Override
     public void initViews() {
         setContentView(R.layout.frag_shouye);
         mIntails = MainActivity.mIntails;
+        mUtils = new Utils(mIntails);
     }
 
     @Override
@@ -138,7 +147,7 @@ public class ShouyeFragment extends BaseFragment {
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
-                if (list.size() > 0) {
+                if (list.size() < 0) {
                     convenientBanner.setPages(new CBViewHolderCreator<LocalImageHolderView>() {
                         @Override
                         public LocalImageHolderView createHolder() {
@@ -150,15 +159,16 @@ public class ShouyeFragment extends BaseFragment {
                             Toast.makeText(mIntails, "position:" + position, Toast.LENGTH_SHORT).show();
                         }
                     });
-//                    top_banner.setBannerView(list);
-//                    top_banner.setVisibility(View.VISIBLE);
                     connecting_shouye_ll.setVisibility(View.VISIBLE);
                     no_connect_shouye_ll.setVisibility(View.GONE);
                 }
             }
+
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
 
-        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
+        mListener.loadGuanggao(new ShouyeListener.OnLoad()
+
+        {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
@@ -174,10 +184,14 @@ public class ShouyeFragment extends BaseFragment {
                 guanggao_view.bindLinearLayout();
                 mSwipe.setRefreshing(false);
             }
-        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-        mListener.loadGoodType(new ShouyeListener.OnLoad() {
+        }
+
+                , "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
+        mListener.loadGoodType(new ShouyeListener.OnLoad()
+
+        {
             @Override
-            public void load(int type, List list) {
+            public void load(int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
                     @Override
                     public void convert(CommonViewHolder holder, List<ImageModel> list, int position) {
@@ -191,16 +205,34 @@ public class ShouyeFragment extends BaseFragment {
                 goodtype_view.setAdapter(mAdapter);
                 goodtype_view.setColumns(2);
                 goodtype_view.bindLinearLayout();
+                goodtype_view.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
+                    @Override
+                    public void onCellClick(int index) {
+                        final ImageModel model = (ImageModel) list.get(index);
+                        mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+                            @Override
+                            public void put(Intent intent) {//跳转到第二个Activity（用来显示）
+                                intent.putExtra("desc", "spfl%" + model.getTitle() + "&" + model.getLink());
+                            }
+                        });
+                    }
+                });
                 mSwipe.setRefreshing(false);
             }
-        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
+        }
+
+                , "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
+        mListener.loadHotGood(new ShouyeListener.OnLoadHot()
+
+        {
             @Override
             public void load(List[] lists) {
                 list = lists;
                 HotClick(0, lists[0]);
             }
-        }, mGoodUrl);
+        }
+
+                , mGoodUrl);
     }
 
     List<ChangeItemModel> mItemList;
@@ -231,7 +263,7 @@ public class ShouyeFragment extends BaseFragment {
             @Override
             public void convert(CommonViewHolder holder, List<GoodModel> list, int position) {
                 GoodModel model = list.get(position);
-                holder.setImageByUrl(R.id.good_iv, model.getImage(), R.mipmap.error);
+                holder.loadByUrl(R.id.good_iv, model.getImage());
                 if (model.getName().length() > 8) {
                     holder.setText(R.id.good_name_tv, model.getName().substring(0, 8) + "..");
                 } else {
@@ -294,6 +326,18 @@ public class ShouyeFragment extends BaseFragment {
 
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.main_good_type_ll:
+                mClick.onItemClick(1);
+                break;
+            case R.id.main_my_order_ll://跳转到订单列表
+//                MainActivity.mIntails.mUtils.IntentPost(DingDanActivity.class);
+                break;
+            case R.id.main_user_unit_ll:
+                mClick.onItemClick(2);
+                break;
+            case R.id.main_shoppingcar_ll:
+                mClick.onItemClick(3);
+                break;
             case R.id.hot_tejia_rl:
                 HotClick(0, list[0]);
                 break;
@@ -307,6 +351,10 @@ public class ShouyeFragment extends BaseFragment {
                 mSwipe.setRefreshing(true);//开始刷新
                 loadDatas();
                 break;
+            case R.id.fenlei_xiangqing_ll://点击跳转到商品类型
+                mClick.onItemClick(1);
+                break;
+
         }
     }
 
@@ -324,6 +372,15 @@ public class ShouyeFragment extends BaseFragment {
         public void UpdateUI(Context context, final int position, ImageModel data) {
             ImageCacheManager.loadImage(data.getImage(), imageView, Utils.getBitmapFromRes(R.mipmap.ic_launcher), Utils.getBitmapFromRes(R.mipmap.ic_default_adimage));
         }
+    }
+
+    public interface OnItemClick {
+        void onItemClick(Object value);//value为传入的值
+
+    }
+
+    public void setOnItemClick(OnItemClick click) {
+        mClick = click;
     }
 
     @Override

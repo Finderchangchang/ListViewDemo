@@ -14,7 +14,7 @@ import liuliu.demo.list.base.BaseFragment;
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.CommonAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
-import liuliu.demo.list.control.fenlei.FenLeiListener;
+import liuliu.demo.list.control.manager.FenLeiListener;
 import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.TypeModel;
 import liuliu.demo.list.ui.activity.DetailListsActivity;

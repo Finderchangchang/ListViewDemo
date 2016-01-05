@@ -104,11 +104,11 @@
         android:orientation="horizontal"
         android:paddingBottom="5dp">
 
-        <!--<in.srain.cube.image.CubeImageView-->
-            <!--android:id="@+id/good_iv"-->
-            <!--android:layout_width="100dp"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_margin="5dp" />-->
+        <ImageView
+            android:id="@+id/good_iv"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package liuliu.demo.list.control.fenlei;
+package liuliu.demo.list.control.manager;
 
 import android.content.Context;
 

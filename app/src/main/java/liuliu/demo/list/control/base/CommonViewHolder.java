@@ -176,6 +176,13 @@ public class CommonViewHolder {
         return this;
     }
 
+    public CommonViewHolder loadByUrl(int viewId, String link) {
+        ImageView view = getView(viewId);
+        view.setVisibility(View.VISIBLE);
+        ImageCacheManager.loadImage(link, view, getBitmapFromRes(R.mipmap.ic_launcher), getBitmapFromRes(R.mipmap.ic_launcher));
+        return this;
+    }
+
     public Bitmap getBitmapFromRes(int resId) {
         Resources res = mContext.getResources();
         return BitmapFactory.decodeResource(res, resId);

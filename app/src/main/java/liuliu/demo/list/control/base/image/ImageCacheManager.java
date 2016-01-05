@@ -26,13 +26,12 @@ public class ImageCacheManager {
     public static ImageLoader mImageLoader = new ImageLoader(VolleyRequestQueueManager.mRequestQueue, mImageCache);
 
     /**
-     * 29      * 获取ImageListener
-     * 30      *
-     * 31      * @param view
-     * 32      * @param defaultImage
-     * 33      * @param errorImage
-     * 34      * @return
-     * 35
+     * 获取ImageListener
+     *
+     * @param view
+     * @param defaultImage
+     * @param errorImage
+     * @return
      */
     public static ImageListener getImageListener(final ImageView view, final Bitmap defaultImage, final Bitmap errorImage) {
 

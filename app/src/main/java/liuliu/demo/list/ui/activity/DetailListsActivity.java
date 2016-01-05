@@ -8,6 +8,8 @@ import net.tsz.afinal.annotation.view.CodeNote;
 
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseActivity;
+import liuliu.demo.list.base.Utils;
+import liuliu.demo.list.ui.last_frag.FenLeiListFragment;
 
 /**
  * 点击进入的页面的Fragment
@@ -20,12 +22,14 @@ public class DetailListsActivity extends BaseActivity {
     @CodeNote(id = R.id.total_botton)
     LinearLayout bottom_ll;
     String mDesc;
+    Utils mUtils;
 
     @Override
     public void initViews() {
         setContentView(R.layout.activity_detail_lists);
         mIntails = this;
-//        mDesc = mUtils.IntentGet(getIntent(), "desc");//获得传递过来的参数
+        mUtils = new Utils(mIntails);
+        mDesc = mUtils.IntentGet(getIntent(), "desc");//获得传递过来的参数
     }
 
     @Override
@@ -33,9 +37,9 @@ public class DetailListsActivity extends BaseActivity {
         // 开启Fragment事务
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
 //        bottom_ll.setVisibility(View.VISIBLE);
-        switch (mDesc.split("\\?")[0]) {
+        switch (mDesc.split("%")[0]) {
             case "spfl"://跳转到商品分类列表（结果-- ../product/list.php?type=2）
-//                transaction.replace(R.id.frag_ll, new FenLeiListFragment());
+                transaction.replace(R.id.frag_ll, new FenLeiListFragment());
                 break;
             case "xq"://跳转到商品详情页面
 //                transaction.replace(R.id.frag_ll, new GoodDetailFragment());
@@ -58,6 +62,9 @@ public class DetailListsActivity extends BaseActivity {
      * 1.跳转到详情页面（xq=123）
      */
     public String getDesc() {
+        if (mDesc.contains("%")) {
+            mDesc = mDesc.split("%")[1];
+        }
         return mDesc;
     }
 }
