@@ -3,10 +3,13 @@ package liuliu.demo.list.ui.first_frag;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,16 +42,39 @@ import liuliu.demo.list.view.GridLinearLayout;
  * Created by Administrator on 2016/1/6.
  */
 public class ShouyeFragment extends BaseFragment {
-    @CodeNote(id = R.id.convenientBanner)
-    ConvenientBanner convenientBanner;//顶部广告栏控件
     @CodeNote(id = R.id.guanggao_main)
     GridLinearLayout guanggao_view;
+    MainActivity mIntails;
+    Utils mUtils;
+    //    @CodeNote(id = R.id.main_good_type_ll, click = "onClick")
+//    LinearLayout main_good_type_ll;
+//    @CodeNote(id = R.id.main_my_order_ll, click = "onClick")
+//    LinearLayout main_my_order_ll;
+//    @CodeNote(id = R.id.main_user_unit_ll, click = "onClick")
+//    LinearLayout main_user_unit_ll;
+//    @CodeNote(id = R.id.main_shoppingcar_ll, click = "onClick")
+//    LinearLayout main_shoppingcar_ll;
+    //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
+    private String mUrl = "http://api.juheapi.com/japi/toh?v=1.0&month=12&day=24&key=adee859f57cade911dbfe1050666153d";
+    //    private String mUrl = "http://api.map.baidu.com/telematics/v3/weather?location=";
+    private String mGoodUrl = "http://www.hesq.com.cn/fresh/fore/logic/app/home/product.php";
+    @CodeNote(id = R.id.scroll_main)
+    ScrollView mScrollView;
     @CodeNote(id = R.id.hot_good_main)
     GridLinearLayout hotgood_view;
     @CodeNote(id = R.id.goodtype_main)
     GridLinearLayout goodtype_view;
+    @CodeNote(id = R.id.srf_layout_main)
+    SwipeRefreshLayout mSwipe;
+    CommonAdapter<ImageModel> mAdapter;
+    CommonAdapter<GoodModel> mAdapters;
+    ShouyeListener mListener;
 
-    //热门选项
+    List<ItemModel> mItems;
+    List list[];
+    ChangeItemModel normalModel;
+    ChangeItemModel pressedModel;
+    int now_preaaed = -1;//当前点击的底部菜单
     @CodeNote(id = R.id.hot_tejia_rl, click = "onClick")
     RelativeLayout hot_tejia_rl;
     @CodeNote(id = R.id.hot_tejia_ll)
@@ -73,31 +99,49 @@ public class ShouyeFragment extends BaseFragment {
     ImageView hot_zuixin_iv;
     @CodeNote(id = R.id.hot_zuixin_tv)
     TextView hot_zuixin_tv;
-
-    private String mGoodUrl = "http://www.hesq.com.cn/fresh/fore/logic/app/home/product.php";
-    ShouyeListener mListener;
-    MainActivity mIntails;
-    Utils mUtils;
-    ChangeItemModel normalModel;
-    ChangeItemModel pressedModel;
-    List<ItemModel> mItems;
+    @CodeNote(id = R.id.no_connect_shouye_ll)
+    LinearLayout no_connect_shouye_ll;
+    @CodeNote(id = R.id.connecting_shouye_ll)
+    LinearLayout connecting_shouye_ll;
+    @CodeNote(id = R.id.no_connect_shouye_btn, click = "onClick")
+    Button no_connect_shouye_btn;
+    private int index = 0;
+    @CodeNote(id = R.id.convenientBanner)
+    ConvenientBanner convenientBanner;//顶部广告栏控件
+    OnItemClick mClick;
+    @CodeNote(id = R.id.fenlei_xiangqing_ll, click = "onClick")
+    LinearLayout xiangqing_ll;
 
     @Override
     public void initViews() {
         setContentView(R.layout.frag_shouye);
         mIntails = MainActivity.mIntails;
         mUtils = new Utils(mIntails);
-        mListener = new ShouyeListener(mIntails);
+    }
+
+    @Override
+    public void initEvents() {
         mItemList = new ArrayList<>();
         mItemList = new ArrayList<>();
         mItemList.add(new ChangeItemModel(hot_tejia_rl, hot_tejia_ll, hot_tejia_tv, hot_tejia_iv));
         mItemList.add(new ChangeItemModel(hot_jingpin_rl, hot_jingpin_ll, hot_jingpin_tv, hot_jingpin_iv));
         mItemList.add(new ChangeItemModel(hot_zuixin_rl, hot_zuixin_ll, hot_zuixin_tv, hot_zuixin_iv));
+        mItems = new ArrayList<>();
+        mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
+        mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
+        mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
+        mListener = new ShouyeListener(mIntails);
+        //设置未联网状态页面的宽高
+        no_connect_shouye_ll.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScannerWidth(mIntails), (Utils.getScannerHeight(mIntails)) - 250));
+        mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadDatas();
+            }
+        });
+        loadDatas();
     }
 
-    CommonAdapter<ImageModel> mAdapter;
-    CommonAdapter<GoodModel> mAdapters;
-    List list[];
 
     private void loadDatas() {
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
@@ -115,24 +159,34 @@ public class ShouyeFragment extends BaseFragment {
                             Toast.makeText(mIntails, "position:" + position, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    connecting_shouye_ll.setVisibility(View.VISIBLE);
+                    no_connect_shouye_ll.setVisibility(View.GONE);
                 }
             }
+
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
-        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
+
+        mListener.loadGuanggao(new ShouyeListener.OnLoad()
+
+        {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
                     @Override
                     public void convert(CommonViewHolder holder, List<ImageModel> imageModel, int position) {
                         loadGG(mIntails, type, holder, list, position);
+                        connecting_shouye_ll.setVisibility(View.VISIBLE);
+                        no_connect_shouye_ll.setVisibility(View.GONE);
                     }
                 };
                 guanggao_view.setAdapter(mAdapter);
                 guanggao_view.setColumns(1);
                 guanggao_view.bindLinearLayout();
-//                mSwipe.setRefreshing(false);
+                mSwipe.setRefreshing(false);
             }
-        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
+        }
+
+                , "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
         mListener.loadGoodType(new ShouyeListener.OnLoad()
 
         {
@@ -150,7 +204,7 @@ public class ShouyeFragment extends BaseFragment {
                 };
                 goodtype_view.setAdapter(mAdapter);
                 goodtype_view.setColumns(2);
-//                goodtype_view.bindLinearLayout();
+                goodtype_view.bindLinearLayout();
                 goodtype_view.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
                     @Override
                     public void onCellClick(int index) {
@@ -163,41 +217,22 @@ public class ShouyeFragment extends BaseFragment {
                         });
                     }
                 });
-//                mSwipe.setRefreshing(false);
+                mSwipe.setRefreshing(false);
             }
         }
 
                 , "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-//        mListener.loadHotGood(new ShouyeListener.OnLoadHot()
-//
-//        {
-//            @Override
-//            public void load(List[] lists) {
-//                list = lists;
-////                HotClick(0, lists[0]);
-//            }
-//        }
-//
-//                , mGoodUrl);
-    }
+        mListener.loadHotGood(new ShouyeListener.OnLoadHot()
 
-    @Override
-    public void initEvents() {
-        loadDatas();
-    }
-
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.hot_tejia_rl:
-                HotClick(0, list[0]);
-                break;
-            case R.id.hot_jingpin_rl:
-                HotClick(1, list[1]);
-                break;
-            case R.id.hot_zuixin_rl:
-                HotClick(2, list[2]);
-                break;
+        {
+            @Override
+            public void load(List[] lists) {
+                list = lists;
+                HotClick(0, lists[0]);
+            }
         }
+
+                , mGoodUrl);
     }
 
     List<ChangeItemModel> mItemList;
@@ -240,23 +275,7 @@ public class ShouyeFragment extends BaseFragment {
         hotgood_view.setAdapter(mAdapters);
         hotgood_view.setColumns(2);
         hotgood_view.bindLinearLayout();
-//        mSwipe.setRefreshing(false);
-    }
-
-    public class LocalImageHolderView implements Holder<ImageModel> {
-        private ImageView imageView;
-
-        @Override
-        public View createView(Context context) {
-            imageView = new ImageView(context);
-            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-            return imageView;
-        }
-
-        @Override
-        public void UpdateUI(Context context, final int position, ImageModel data) {
-            ImageCacheManager.loadImage(data.getImage(), imageView, Utils.getBitmapFromRes(R.mipmap.ic_launcher), Utils.getBitmapFromRes(R.mipmap.ic_default_adimage));
-        }
+        mSwipe.setRefreshing(false);
     }
 
     //加载广告布局
@@ -303,6 +322,65 @@ public class ShouyeFragment extends BaseFragment {
         holder.setVisible(R.id.totalItem_ll, false);
         holder.setVisible(R.id.total_left_ll, false);
         holder.setVisible(R.id.total_right_ll, false);
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+//            case R.id.main_good_type_ll:
+//                mClick.onItemClick(1);
+//                break;
+//            case R.id.main_my_order_ll://跳转到订单列表
+////                MainActivity.mIntails.mUtils.IntentPost(DingDanActivity.class);
+//                break;
+//            case R.id.main_user_unit_ll:
+//                mClick.onItemClick(2);
+//                break;
+//            case R.id.main_shoppingcar_ll:
+//                mClick.onItemClick(3);
+//                break;
+            case R.id.hot_tejia_rl:
+                HotClick(0, list[0]);
+                break;
+            case R.id.hot_jingpin_rl:
+                HotClick(1, list[1]);
+                break;
+            case R.id.hot_zuixin_rl:
+                HotClick(2, list[2]);
+                break;
+            case R.id.no_connect_shouye_btn://刷新按钮
+                mSwipe.setRefreshing(true);//开始刷新
+                loadDatas();
+                break;
+            case R.id.fenlei_xiangqing_ll://点击跳转到商品类型
+                mClick.onItemClick(1);
+                break;
+
+        }
+    }
+
+    public class LocalImageHolderView implements Holder<ImageModel> {
+        private ImageView imageView;
+
+        @Override
+        public View createView(Context context) {
+            imageView = new ImageView(context);
+            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+            return imageView;
+        }
+
+        @Override
+        public void UpdateUI(Context context, final int position, ImageModel data) {
+            ImageCacheManager.loadImage(data.getImage(), imageView, Utils.getBitmapFromRes(R.mipmap.ic_launcher), Utils.getBitmapFromRes(R.mipmap.ic_default_adimage));
+        }
+    }
+
+    public interface OnItemClick {
+        void onItemClick(Object value);//value为传入的值
+
+    }
+
+    public void setOnItemClick(OnItemClick click) {
+        mClick = click;
     }
 
     @Override

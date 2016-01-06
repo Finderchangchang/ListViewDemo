@@ -29,4 +29,5 @@ dependencies {
     compile 'in.srain.cube:clog:1.0.2'
     compile 'in.srain.cube:cube-sdk:1.0.44@aar'
     compile 'com.bigkoo:convenientbanner:2.0.4'
+    compile 'me.xiaopan:sketch:2.1.1'
 }

@@ -20,7 +20,6 @@ import liuliu.demo.list.model.ItemModel;
 import liuliu.demo.list.ui.first_frag.FenleiFragment;
 import liuliu.demo.list.ui.first_frag.GouwucheFragment;
 import liuliu.demo.list.ui.first_frag.ShouyeFragment;
-import liuliu.demo.list.ui.first_frag.ShouyeFragments;
 import liuliu.demo.list.ui.first_frag.WodeFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -98,13 +97,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (shouye == null) {
                 // 如果MessageFragment为空，则创建一个并添加到界面上
                 shouye = new ShouyeFragment();
-//                shouye.setOnItemClick(new ShouyeFragments.OnItemClick() {
-//                    @Override
-//                    public void onItemClick(Object value) {
-//                        now_pressed = (Integer) value;
-//                        setItem(now_pressed);
-//                    }
-//                });
+                shouye.setOnItemClick(new ShouyeFragment.OnItemClick() {
+                    @Override
+                    public void onItemClick(Object value) {
+                        now_pressed = (Integer) value;
+                        setItem(now_pressed);
+                    }
+                });
                 transaction.add(R.id.frag_ll, shouye);
             } else {
                 // 如果MessageFragment不为空，则直接将它显示出来

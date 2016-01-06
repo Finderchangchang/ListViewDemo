@@ -21,6 +21,7 @@ import liuliu.demo.list.R;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
 import liuliu.demo.list.model.BannerModel;
 import liuliu.demo.list.model.ImageModel;
+import me.xiaopan.sketch.SketchImageView;
 
 /**
  * Created by liuliu on 2015/11/16   16:29
@@ -173,6 +174,13 @@ public class CommonViewHolder {
         ImageView view = getView(viewId);
         view.setVisibility(View.VISIBLE);
         ImageCacheManager.loadImage(m.getImage(), view, getBitmapFromRes(R.mipmap.ic_launcher), getBitmapFromRes(R.mipmap.ic_launcher));
+        return this;
+    }
+
+    public CommonViewHolder loadSketchByUrl(int viewId, String link) {
+        SketchImageView view = getView(viewId);
+        view.setVisibility(View.VISIBLE);
+        view.displayImage(link);
         return this;
     }
 
