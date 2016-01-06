@@ -7,4 +7,13 @@
         <attr name="columns" format="integer" />
         <attr name="margin" format="integer" />
     </declare-styleable>
+    <declare-styleable name="MyItemView">
+        <attr name="myitem_leftimage" format="reference" />
+        <attr name="myitem_rightimage" format="integer" />
+        <attr name="myitem_lefttext" format="string" />
+        <attr name="myitem_righttext" format="string" />
+        <attr name="is_top" format="boolean" />
+        <attr name="is_bottom" format="boolean" />
+        <attr name="is_center" format="boolean" />
+    </declare-styleable>
 </resources>

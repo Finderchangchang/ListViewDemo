@@ -18,7 +18,10 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.ItemModel;
 import liuliu.demo.list.ui.first_frag.FenleiFragment;
+import liuliu.demo.list.ui.first_frag.GouwucheFragment;
 import liuliu.demo.list.ui.first_frag.ShouyeFragment;
+import liuliu.demo.list.ui.first_frag.ShouyeFragments;
+import liuliu.demo.list.ui.first_frag.WodeFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static MainActivity mIntails;
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mItems = new ArrayList();
         frag_ll = (FrameLayout) findViewById(R.id.frag_ll);
         loadUi();
-        setItem(0);
+        setItem(3);
         now_pressed = mClick;
     }
 
@@ -95,13 +98,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (shouye == null) {
                 // 如果MessageFragment为空，则创建一个并添加到界面上
                 shouye = new ShouyeFragment();
-                shouye.setOnItemClick(new ShouyeFragment.OnItemClick() {
-                    @Override
-                    public void onItemClick(Object value) {
-                        now_pressed = (Integer) value;
-                        setItem(now_pressed);
-                    }
-                });
+//                shouye.setOnItemClick(new ShouyeFragments.OnItemClick() {
+//                    @Override
+//                    public void onItemClick(Object value) {
+//                        now_pressed = (Integer) value;
+//                        setItem(now_pressed);
+//                    }
+//                });
                 transaction.add(R.id.frag_ll, shouye);
             } else {
                 // 如果MessageFragment不为空，则直接将它显示出来
@@ -116,12 +119,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 // 如果MessageFragment不为空，则直接将它显示出来
                 transaction.show(fenlei);
             }
+        } else if (position == 2) {
+            if (wode == null) {
+                // 如果MessageFragment为空，则创建一个并添加到界面上
+                wode = new WodeFragment();
+                transaction.add(R.id.frag_ll, wode);
+            } else {
+                // 如果MessageFragment不为空，则直接将它显示出来
+                transaction.show(wode);
+            }
+        } else if (position == 3) {
+            if (gouwuche == null) {
+                // 如果MessageFragment为空，则创建一个并添加到界面上
+                gouwuche = new GouwucheFragment();
+                transaction.add(R.id.frag_ll, gouwuche);
+            } else {
+                // 如果MessageFragment不为空，则直接将它显示出来
+                transaction.show(gouwuche);
+            }
         }
         transaction.commit();
     }
 
     private ShouyeFragment shouye;
     private FenleiFragment fenlei;
+    private WodeFragment wode;
+    private GouwucheFragment gouwuche;
 
     /**
      * 将所有的Fragment都置为隐藏状态。
@@ -134,6 +157,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (fenlei != null) {
             transaction.hide(fenlei);
+        }
+        if (wode != null) {
+            transaction.hide(wode);
+        }
+        if (gouwuche != null) {
+            transaction.hide(gouwuche);
         }
     }
 
@@ -161,6 +190,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.total_bottom_gouwuche_ll:
+                if (now_pressed != 3) {
+                    setItem(3);
+                    now_pressed = 3;
+                }
                 break;
         }
     }
