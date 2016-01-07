@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mItems = new ArrayList();
         frag_ll = (FrameLayout) findViewById(R.id.frag_ll);
         loadUi();
-        setItem(3);
+        setItem(0);
         now_pressed = mClick;
     }
 

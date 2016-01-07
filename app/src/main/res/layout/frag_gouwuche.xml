@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/gouwuche_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:orientation="horizontal">-->
 
-        <com.android.volley.toolbox.NetworkImageView
-            android:id="@+id/iv"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
+        <!--<com.android.volley.toolbox.NetworkImageView-->
+            <!--android:id="@+id/iv"-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="100dp" />-->
 
-        <me.xiaopan.sketch.SketchImageView
-            android:id="@+id/image_head"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentRight="true" />
-    </RelativeLayout>
+        <!--<me.xiaopan.sketch.SketchImageView-->
+            <!--android:id="@+id/image_head"-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="100dp"-->
+            <!--android:layout_alignParentRight="true" />-->
+    <!--</RelativeLayout>-->
 
 
     <GridView
         android:id="@+id/gv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></GridView>
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

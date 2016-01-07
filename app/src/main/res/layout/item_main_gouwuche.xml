@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="85dp">
+
+    <LinearLayout
+        android:id="@+id/item_fenlei_ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="3dp"
+        android:background="@drawable/radius_dashed_line"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/type_title_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="精品主食"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/type_desc1_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="火烧馒头"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/type_desc2_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="驴肉火烧"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <me.xiaopan.sketch.SketchImageView
+            android:id="@+id/type_iv"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="5dp" />
+    </LinearLayout>
+</LinearLayout>

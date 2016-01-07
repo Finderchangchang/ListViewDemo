@@ -13,13 +13,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import net.tsz.afinal.FinalDb;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import liuliu.demo.list.R;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
-import liuliu.demo.list.model.BannerModel;
 import liuliu.demo.list.model.ImageModel;
 import me.xiaopan.sketch.SketchImageView;
 
@@ -29,22 +33,33 @@ import me.xiaopan.sketch.SketchImageView;
  * @author 柳伟杰
  * @Email 1031066280@qq.com
  */
-public class CommonViewHolder {
+public class GouwucheViewHolder {
     private final SparseArray<View> mViews;
     private int mPosition;
     private View mConvertView;
     private ImageLoader mImageLoader;
     private Context mContext;
+    private DisplayImageOptions mDisplayImageOptions;
+    private ImageLoadingListenerImpl mImageLoadingListenerImpl;
 
-    private CommonViewHolder(Context context, ViewGroup parent, int layoutId,
-                             int position) {
+    private GouwucheViewHolder(Context context, ViewGroup parent, int layoutId,
+                               int position, ImageLoader loader) {
         this.mContext = context;
         this.mPosition = position;
         this.mViews = new SparseArray<View>();
         mConvertView = LayoutInflater.from(context).inflate(layoutId, parent,
                 false);
         mConvertView.setTag(this);
-        mImageLoader = new ImageLoader(mContext);
+        mImageLoader = loader;
+        mDisplayImageOptions = new DisplayImageOptions.Builder()
+                .showStubImage(R.mipmap.ic_default_adimage)
+                .showImageForEmptyUri(R.mipmap.ic_default_adimage)
+                .showImageOnFail(R.mipmap.ic_default_adimage)
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading()
+                .build();
+        mImageLoadingListenerImpl = new ImageLoadingListenerImpl();
     }
 
     /**
@@ -57,19 +72,19 @@ public class CommonViewHolder {
      * @param position
      * @return
      */
-    public static CommonViewHolder get(Context context, View convertView,
-                                       ViewGroup parent, int layoutId, int position) {
+    public static GouwucheViewHolder get(Context context, View convertView,
+                                         ViewGroup parent, int layoutId, int position, ImageLoader loader) {
         if (convertView == null) {
-            return new CommonViewHolder(context, parent, layoutId, position);
+            return new GouwucheViewHolder(context, parent, layoutId, position, loader);
         }
-        return (CommonViewHolder) convertView.getTag();
+        return (GouwucheViewHolder) convertView.getTag();
     }
 
     public View getConvertView() {
         return mConvertView;
     }
 
-    public CommonViewHolder setHeight(int viewId, int height) {
+    public GouwucheViewHolder setHeight(int viewId, int height) {
         LinearLayout view = getView(viewId);
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         lp.height = height;
@@ -99,7 +114,7 @@ public class CommonViewHolder {
      * @param text
      * @return
      */
-    public CommonViewHolder setText(int viewId, Object text) {
+    public GouwucheViewHolder setText(int viewId, Object text) {
         TextView view = getView(viewId);
         view.setText(text + "");
         return this;
@@ -118,7 +133,7 @@ public class CommonViewHolder {
      * @param listener
      * @return
      */
-    public CommonViewHolder setOnClickListener(int viewId, View.OnClickListener listener) {
+    public GouwucheViewHolder setOnClickListener(int viewId, View.OnClickListener listener) {
         View view = getView(viewId);
         view.setOnClickListener(listener);
         return this;
@@ -131,7 +146,7 @@ public class CommonViewHolder {
      * @param drawableId
      * @return
      */
-    public CommonViewHolder setImageResource(int viewId, int drawableId) {
+    public GouwucheViewHolder setImageResource(int viewId, int drawableId) {
         ImageView view = getView(viewId);
         view.setImageResource(drawableId);
         return this;
@@ -144,30 +159,19 @@ public class CommonViewHolder {
      * @param bm
      * @return
      */
-    public CommonViewHolder setImageBitmap(int viewId, Bitmap bm) {
+    public GouwucheViewHolder setImageBitmap(int viewId, Bitmap bm) {
         ImageView view = getView(viewId);
         view.setImageBitmap(bm);
         return this;
     }
 
-    public CommonViewHolder setImageDrawable(int viewId, Drawable bm) {
+    public GouwucheViewHolder setImageDrawable(int viewId, Drawable bm) {
         ImageView view = getView(viewId);
         view.setImageDrawable(bm);
         return this;
     }
 
-    public CommonViewHolder setImageByUrl(int viewId, String url) {
-        mImageLoader.showImageBuThread(setImageTag(viewId, url), url, 0);
-        return this;
-    }
-
-    public CommonViewHolder setImageByUrl(int viewId, Object model) {
-        ImageModel m = (ImageModel) model;
-        mImageLoader.showImageBuThread(setImageTag(viewId, m.getImage()), m.getImage(), 0);
-        return this;
-    }
-
-    public CommonViewHolder loadImageByUrl(int viewId, Object model) {
+    public GouwucheViewHolder loadImageByUrl(int viewId, Object model) {
         ImageModel m = (ImageModel) model;
         ImageView view = getView(viewId);
         view.setVisibility(View.VISIBLE);
@@ -175,17 +179,33 @@ public class CommonViewHolder {
         return this;
     }
 
-    public CommonViewHolder loadSketchByUrl(int viewId, String link) {
+    public GouwucheViewHolder loadSketchByUrl(int viewId, String link) {
         SketchImageView view = getView(viewId);
         view.setVisibility(View.VISIBLE);
         view.displayImage(link);
         return this;
     }
 
-    public CommonViewHolder loadByUrl(int viewId, String link) {
+    public GouwucheViewHolder loadByUrl(int viewId, String link) {
         ImageView view = getView(viewId);
         view.setVisibility(View.VISIBLE);
         ImageCacheManager.loadImage(link, view, getBitmapFromRes(R.mipmap.ic_launcher), getBitmapFromRes(R.mipmap.ic_launcher));
+        return this;
+    }
+
+    public GouwucheViewHolder loadByImage(int viewId, String link) {
+        ImageView view = getView(viewId);
+        view.setVisibility(View.VISIBLE);
+        try {
+            //加载图片
+            mImageLoader.displayImage(
+                    link,
+                    view,
+                    mDisplayImageOptions,
+                    mImageLoadingListenerImpl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -194,29 +214,6 @@ public class CommonViewHolder {
         return BitmapFactory.decodeResource(res, resId);
     }
 
-    /**
-     * 通过url设置图片显示
-     *
-     * @param viewId   ImageView组件Id
-     * @param url      图片路径
-     * @param def_view 默认图片id
-     */
-    public CommonViewHolder setImageByUrl(int viewId, String url, int def_view) {
-        mImageLoader.showImageBuThread(setImageTag(viewId, url), url, def_view);
-        return this;
-    }
-
-    /**
-     * 通过url设置图片显示
-     *
-     * @param viewId  ImageView组件Id
-     * @param url     图片路径
-     * @param def_url 默认图片路径
-     */
-    public CommonViewHolder setImageByUrl(int viewId, String url, String def_url) {
-        mImageLoader.showImageBuThread(setImageTag(viewId, url), url, def_url);
-        return this;
-    }
 
     private ImageView setImageTag(int viewId, String url) {
         ImageView view = getView(viewId);
@@ -230,7 +227,7 @@ public class CommonViewHolder {
      * @param viewId（控件id）
      * @param result(控件显示隐藏)
      */
-    public CommonViewHolder setVisible(int viewId, boolean result) {
+    public GouwucheViewHolder setVisible(int viewId, boolean result) {
         View view = getView(viewId);
         if (result) {
             view.setVisibility(View.VISIBLE);
@@ -240,7 +237,7 @@ public class CommonViewHolder {
         return this;
     }
 
-    public CommonViewHolder setMargin(int viewId, int left, int right, int top, int bottom) {
+    public GouwucheViewHolder setMargin(int viewId, int left, int right, int top, int bottom) {
         LinearLayout ll = getView(viewId);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) ll.getLayoutParams();
         layoutParams.setMargins(left, right, top, bottom);//4个参数按顺序分别是左上右下
@@ -250,5 +247,26 @@ public class CommonViewHolder {
 
     public int getPosition() {
         return mPosition;
+    }
+
+    //监听图片异步加载
+    public static class ImageLoadingListenerImpl extends SimpleImageLoadingListener {
+
+        public static final List<String> displayedImages =
+                Collections.synchronizedList(new LinkedList<String>());
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+            if (bitmap != null) {
+                ImageView imageView = (ImageView) view;
+                boolean isFirstDisplay = !displayedImages.contains(imageUri);
+                if (isFirstDisplay) {
+                    //图片的淡入效果
+                    FadeInBitmapDisplayer.animate(imageView, 500);
+                    displayedImages.add(imageUri);
+                    System.out.println("===> loading " + imageUri);
+                }
+            }
+        }
     }
 }

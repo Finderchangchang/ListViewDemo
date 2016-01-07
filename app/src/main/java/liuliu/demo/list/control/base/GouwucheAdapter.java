@@ -6,30 +6,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
-import liuliu.demo.list.R;
-
-public abstract class CommonAdapter<T> extends BaseAdapter {
+public abstract class GouwucheAdapter<T> extends BaseAdapter {
     protected Context mContext;
     protected List<T> mDatas;
     protected LayoutInflater mInflater;
     private int layoutId;
+    private ImageLoader mImageLoader;
 
-    public CommonAdapter(Context context, List<T> datas, int layoutId) {
+    public GouwucheAdapter(Context context, List<T> datas, int layoutId, ImageLoader loader) {
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
         this.mDatas = datas;
         this.layoutId = layoutId;
+        this.mImageLoader = loader;
     }
 
     @Override
@@ -49,15 +43,14 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        CommonViewHolder holder = getViewHolder(position, convertView, parent);
+        GouwucheViewHolder holder = getViewHolder(position, convertView, parent);
         convert(holder, mDatas, position);
         return holder.getConvertView();
     }
 
-    private CommonViewHolder getViewHolder(int position, View convertView, ViewGroup parent) {
-        return CommonViewHolder.get(mContext, convertView, parent, layoutId, position);
+    private GouwucheViewHolder getViewHolder(int position, View convertView, ViewGroup parent) {
+        return GouwucheViewHolder.get(mContext, convertView, parent, layoutId, position, mImageLoader);
     }
 
-    public abstract void convert(CommonViewHolder holder, List<T> t, int position);
-
+    public abstract void convert(GouwucheViewHolder holder, List<T> t, int position);
 }

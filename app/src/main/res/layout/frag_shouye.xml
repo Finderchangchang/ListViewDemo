@@ -37,110 +37,104 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <!--<liuliu.demo.list.view.BannerView-->
-                <!--android:id="@+id/banner_view_main"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="150dp"-->
-                <!--android:visibility="gone" />-->
                 <com.bigkoo.convenientbanner.ConvenientBanner
                     android:id="@+id/convenientBanner"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     app:canLoop="true" />
 
-                <!--<LinearLayout-->
-                <!--android:id="@+id/main_styles_ll"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="95dp"-->
-                <!--android:background="#fff">-->
+                <LinearLayout
+                    android:id="@+id/main_styles_ll"
+                    android:layout_width="match_parent"
+                    android:layout_height="95dp"
+                    android:background="#fff">
 
-                <!--<LinearLayout-->
-                <!--android:id="@+id/main_good_type_ll"-->
-                <!--style="@style/MainHotLLStyle"-->
-                <!--android:layout_marginLeft="14dp"-->
-                <!--android:layout_marginRight="7dp"-->
-                <!--android:background="#add597">-->
+                    <LinearLayout
+                        android:id="@+id/main_good_type_ll"
+                        style="@style/MainHotLLStyle"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginRight="7dp"
+                        android:background="#add597">
 
-                <!--<ImageView-->
-                <!--android:layout_width="30dp"-->
-                <!--android:layout_height="30dp"-->
-                <!--android:src="@mipmap/fenlei_white" />-->
+                        <ImageView
+                            android:id="@+id/good_type_iv"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
 
-                <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="商品类型"-->
-                <!--android:textColor="#ffff"-->
-                <!--android:textSize="12sp" />-->
-                <!--</LinearLayout>-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="商品类型"
+                            android:textColor="#ffff"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                <!--<LinearLayout-->
-                <!--android:id="@+id/main_my_order_ll"-->
-                <!--style="@style/MainHotLLStyle"-->
-                <!--android:layout_marginLeft="7dp"-->
-                <!--android:layout_marginRight="7dp"-->
-                <!--android:background="#f7b47f">-->
+                    <LinearLayout
+                        android:id="@+id/main_my_order_ll"
+                        style="@style/MainHotLLStyle"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginRight="7dp"
+                        android:background="#f7b47f">
 
-                <!--<LinearLayout-->
-                <!--android:layout_width="30dp"-->
-                <!--android:layout_height="30dp"-->
-                <!--android:gravity="center">-->
+                        <LinearLayout
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:gravity="center">
 
-                <!--<ImageView-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:layout_height="match_parent"-->
-                <!--android:layout_margin="4dp"-->
-                <!--android:src="@mipmap/dingdan_white" />-->
-                <!--</LinearLayout>-->
+                            <ImageView
+                                android:id="@+id/my_order_iv"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_margin="4dp" />
+                        </LinearLayout>
 
-                <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="我的订单"-->
-                <!--android:textColor="#ffff"-->
-                <!--android:textSize="12sp" />-->
-                <!--</LinearLayout>-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="我的订单"
+                            android:textColor="#ffff"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                <!--<LinearLayout-->
-                <!--android:id="@+id/main_user_unit_ll"-->
-                <!--style="@style/MainHotLLStyle"-->
-                <!--android:layout_marginLeft="7dp"-->
-                <!--android:layout_marginRight="7dp"-->
-                <!--android:background="#7ecdf4">-->
+                    <LinearLayout
+                        android:id="@+id/main_user_unit_ll"
+                        style="@style/MainHotLLStyle"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginRight="7dp"
+                        android:background="#7ecdf4">
 
-                <!--<ImageView-->
-                <!--android:layout_width="30dp"-->
-                <!--android:layout_height="30dp"-->
-                <!--android:src="@mipmap/wode_white" />-->
+                        <ImageView
+                            android:id="@+id/user_center_iv"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
 
-                <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="用户中心"-->
-                <!--android:textColor="#ffff"-->
-                <!--android:textSize="12sp" />-->
-                <!--</LinearLayout>-->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="用户中心"
+                            android:textColor="#ffff"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-                <!--<LinearLayout-->
-                <!--android:id="@+id/main_shoppingcar_ll"-->
-                <!--style="@style/MainHotLLStyle"-->
-                <!--android:layout_marginLeft="7dp"-->
-                <!--android:layout_marginRight="14dp"-->
-                <!--android:background="#F29c9f">-->
+                    <LinearLayout
+                        android:id="@+id/main_shoppingcar_ll"
+                        style="@style/MainHotLLStyle"
+                        android:layout_marginLeft="7dp"
+                        android:layout_marginRight="14dp"
+                        android:background="#F29c9f">
 
-                <!--<ImageView-->
-                <!--android:layout_width="30dp"-->
-                <!--android:layout_height="30dp"-->
-                <!--android:src="@mipmap/gouwuche_white" />-->
-
-                <!--<TextView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:text="购物车"-->
-                <!--android:textColor="#ffff"-->
-                <!--android:textSize="12sp" />-->
-                <!--</LinearLayout>-->
-                <!--</LinearLayout>-->
+                        <ImageView
+                            android:id="@+id/good_car_iv"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="购物车"
+                            android:textColor="#ffff"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </LinearLayout>
 
                 <liuliu.demo.list.view.GridLinearLayout
                     android:id="@+id/guanggao_main"

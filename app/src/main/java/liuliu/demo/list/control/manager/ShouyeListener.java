@@ -52,7 +52,6 @@ public class ShouyeListener {
     public void loadGuanggao(final OnLoad load, String url) {
         guanggao.getJson(new AnalyzeBase.OnLoadData() {
             ImageModel model;
-
             @Override
             public void load(boolean result, final Object object) {
                 JSONObject json = (JSONObject) object;

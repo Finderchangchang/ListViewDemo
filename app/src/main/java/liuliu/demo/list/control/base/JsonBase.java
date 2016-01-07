@@ -11,14 +11,12 @@ import com.android.volley.toolbox.Volley;
 
 import net.tsz.afinal.FinalDb;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import liuliu.demo.list.base.Utils;
@@ -28,49 +26,38 @@ import liuliu.demo.list.model.CacheModel;
  * 解析json的方法
  * Created by Administrator on 2015/12/25.
  */
-public class AnalyzeBase {
+public class JsonBase {
     private Context mIntails;
     private FinalDb mDB;
 
-    public AnalyzeBase(Context mIntails) {
+    public JsonBase(Context mIntails) {
         this.mIntails = mIntails;
         mDB = FinalDb.create(mIntails);
     }
 
     public void getJson(final OnLoadData loadData, String url) {
-        //判断当前网络状态
-        if (Utils.isNetworkConnected(mIntails)) {//联网（访问网络数据）
-            RequestQueue mQueue = Volley.newRequestQueue(mIntails);
-            JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                if (response.getString("return").equals("OK")) {//请求成功触发事件
-                                    loadData.load(true, response.get("data"));
-                                }
-                            } catch (JSONException e) {
-                                loadData.load(false, null);
-                            }
+        RequestQueue mQueue = Volley.newRequestQueue(mIntails);
+        JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            loadData.load(true, response.get("faces"));
+                        } catch (JSONException e) {
+                            loadData.load(false, null);
                         }
                     }
-                    , new Response.ErrorListener()
-
-            {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    loadData.load(false, null);
                 }
-            }
-            );
-            mQueue.add(jsonObjectRequest);
-        } else {//未联网
-            List<CacheModel> list = mDB.findAllByWhere(CacheModel.class, "type='guanggao'");
-            if (list.size() > 0) {
+                , new Response.ErrorListener()
+
+        {
+            @Override
+            public void onErrorResponse(VolleyError error) {
                 loadData.load(false, null);
             }
         }
-
+        );
+        mQueue.add(jsonObjectRequest);
     }
 
     /**

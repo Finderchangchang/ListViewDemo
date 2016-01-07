@@ -17,6 +17,7 @@ import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.holder.CBViewHolderCreator;
 import com.bigkoo.convenientbanner.holder.Holder;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
+import com.squareup.picasso.Picasso;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
@@ -46,17 +47,14 @@ public class ShouyeFragment extends BaseFragment {
     GridLinearLayout guanggao_view;
     MainActivity mIntails;
     Utils mUtils;
-    //    @CodeNote(id = R.id.main_good_type_ll, click = "onClick")
-//    LinearLayout main_good_type_ll;
-//    @CodeNote(id = R.id.main_my_order_ll, click = "onClick")
-//    LinearLayout main_my_order_ll;
-//    @CodeNote(id = R.id.main_user_unit_ll, click = "onClick")
-//    LinearLayout main_user_unit_ll;
-//    @CodeNote(id = R.id.main_shoppingcar_ll, click = "onClick")
-//    LinearLayout main_shoppingcar_ll;
-    //http://api.map.baidu.com/telematics/v3/weather?location=淇濆畾&output=json&ak=XAUTG3wLFCte206ZrMVunjbG&mcode=5F:33:8B:DD:33:47:51:54:BD:52:04:11:97:3D:82:9D:21:23:BB:AA;liuliu.demo.list
-    private String mUrl = "http://api.juheapi.com/japi/toh?v=1.0&month=12&day=24&key=adee859f57cade911dbfe1050666153d";
-    //    private String mUrl = "http://api.map.baidu.com/telematics/v3/weather?location=";
+    @CodeNote(id = R.id.main_good_type_ll, click = "onClick")
+    LinearLayout main_good_type_ll;
+    @CodeNote(id = R.id.main_my_order_ll, click = "onClick")
+    LinearLayout main_my_order_ll;
+    @CodeNote(id = R.id.main_user_unit_ll, click = "onClick")
+    LinearLayout main_user_unit_ll;
+    @CodeNote(id = R.id.main_shoppingcar_ll, click = "onClick")
+    LinearLayout main_shoppingcar_ll;
     private String mGoodUrl = "http://www.hesq.com.cn/fresh/fore/logic/app/home/product.php";
     @CodeNote(id = R.id.scroll_main)
     ScrollView mScrollView;
@@ -111,6 +109,14 @@ public class ShouyeFragment extends BaseFragment {
     OnItemClick mClick;
     @CodeNote(id = R.id.fenlei_xiangqing_ll, click = "onClick")
     LinearLayout xiangqing_ll;
+    @CodeNote(id = R.id.good_type_iv)
+    ImageView good_type;
+    @CodeNote(id = R.id.my_order_iv)
+    ImageView my_order;
+    @CodeNote(id = R.id.user_center_iv)
+    ImageView user_center;
+    @CodeNote(id = R.id.good_car_iv)
+    ImageView good_car;
 
     @Override
     public void initViews() {
@@ -130,6 +136,10 @@ public class ShouyeFragment extends BaseFragment {
         mItems.add(new ItemModel("首页", R.mipmap.shouye_normal, R.mipmap.shouye_normal_pressed));
         mItems.add(new ItemModel("分类", R.mipmap.fenlei_normal, R.mipmap.fenlei_normal_pressed));
         mItems.add(new ItemModel("我的", R.mipmap.wode_normal, R.mipmap.wode_normal_pressed));
+        good_type.setImageBitmap(Utils.readBitMap(mIntails, R.mipmap.fenlei_white));
+        my_order.setImageBitmap(Utils.readBitMap(mIntails, R.mipmap.dingdan_white));
+        user_center.setImageBitmap(Utils.readBitMap(mIntails, R.mipmap.wode_white));
+        good_car.setImageBitmap(Utils.readBitMap(mIntails, R.mipmap.gouwuche_white));
         mListener = new ShouyeListener(mIntails);
         //设置未联网状态页面的宽高
         no_connect_shouye_ll.setLayoutParams(new LinearLayout.LayoutParams(Utils.getScannerWidth(mIntails), (Utils.getScannerHeight(mIntails)) - 250));
@@ -140,8 +150,13 @@ public class ShouyeFragment extends BaseFragment {
             }
         });
         loadDatas();
-    }
+        //判断当前网络是否有问题
+        if (Utils.isNetworkConnected(mIntails)) {
 
+        } else {
+
+        }
+    }
 
     private void loadDatas() {
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
@@ -166,9 +181,7 @@ public class ShouyeFragment extends BaseFragment {
 
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
 
-        mListener.loadGuanggao(new ShouyeListener.OnLoad()
-
-        {
+        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
                 mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
@@ -326,18 +339,18 @@ public class ShouyeFragment extends BaseFragment {
 
     public void onClick(View v) {
         switch (v.getId()) {
-//            case R.id.main_good_type_ll:
-//                mClick.onItemClick(1);
-//                break;
-//            case R.id.main_my_order_ll://跳转到订单列表
-////                MainActivity.mIntails.mUtils.IntentPost(DingDanActivity.class);
-//                break;
-//            case R.id.main_user_unit_ll:
-//                mClick.onItemClick(2);
-//                break;
-//            case R.id.main_shoppingcar_ll:
-//                mClick.onItemClick(3);
-//                break;
+            case R.id.main_good_type_ll:
+                mClick.onItemClick(1);
+                break;
+            case R.id.main_my_order_ll://跳转到订单列表
+//                MainActivity.mIntails.mUtils.IntentPost(DingDanActivity.class);
+                break;
+            case R.id.main_user_unit_ll:
+                mClick.onItemClick(2);
+                break;
+            case R.id.main_shoppingcar_ll:
+                mClick.onItemClick(3);
+                break;
             case R.id.hot_tejia_rl:
                 HotClick(0, list[0]);
                 break;
