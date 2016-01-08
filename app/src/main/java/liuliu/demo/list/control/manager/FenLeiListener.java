@@ -1,12 +1,16 @@
 package liuliu.demo.list.control.manager;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import liuliu.demo.list.control.base.AnalyzeBase;
 import liuliu.demo.list.model.TypeModel;
 
@@ -24,13 +28,12 @@ public class FenLeiListener {
     }
 
     public void loadFenlei(final OnLoad load, String url) {
-        jsonbase.getJson(new AnalyzeBase.OnLoadData() {
-
-
+        jsonbase.getJson("fenlei", new AnalyzeBase.OnLoadData() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void load(boolean result, final Object object) {
-                JSONArray json = (JSONArray) object;
                 try {
+                    JSONArray json = new JSONArray(object.toString());
                     List[] lists = new List[json.length()];
                     for (int i = 0; i < json.length(); i++) {
                         List<TypeModel> list = new ArrayList<TypeModel>();

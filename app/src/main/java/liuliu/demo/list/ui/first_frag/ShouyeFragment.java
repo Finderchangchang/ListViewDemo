@@ -27,8 +27,10 @@ import java.util.List;
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
 import liuliu.demo.list.base.Utils;
-import liuliu.demo.list.control.base.CommonAdapter;
+import liuliu.demo.list.control.base.GouwucheAdapter;
 import liuliu.demo.list.control.base.CommonViewHolder;
+import liuliu.demo.list.control.base.GouwucheAdapter;
+import liuliu.demo.list.control.base.GouwucheViewHolder;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
 import liuliu.demo.list.control.manager.ShouyeListener;
 import liuliu.demo.list.model.ChangeItemModel;
@@ -64,8 +66,8 @@ public class ShouyeFragment extends BaseFragment {
     GridLinearLayout goodtype_view;
     @CodeNote(id = R.id.srf_layout_main)
     SwipeRefreshLayout mSwipe;
-    CommonAdapter<ImageModel> mAdapter;
-    CommonAdapter<GoodModel> mAdapters;
+    GouwucheAdapter<ImageModel> mAdapter;
+    GouwucheAdapter<GoodModel> mAdapters;
     ShouyeListener mListener;
 
     List<ItemModel> mItems;
@@ -146,19 +148,18 @@ public class ShouyeFragment extends BaseFragment {
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadDatas();
+                if (Utils.isNetworkConnected(mIntails)) {//联网状态加载数据
+                    loadDatas(true);
+                } else {//未联网直接关闭
+                    mSwipe.setRefreshing(false);
+                }
             }
         });
-        loadDatas();
-        //判断当前网络是否有问题
-        if (Utils.isNetworkConnected(mIntails)) {
-
-        } else {
-
-        }
+        loadDatas(false);
     }
 
-    private void loadDatas() {
+    private void loadDatas(boolean result) {
+        //顶部广告
         mListener.loadTop(new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
@@ -178,15 +179,13 @@ public class ShouyeFragment extends BaseFragment {
                     no_connect_shouye_ll.setVisibility(View.GONE);
                 }
             }
-
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
-
         mListener.loadGuanggao(new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
-                mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
+                mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
                     @Override
-                    public void convert(CommonViewHolder holder, List<ImageModel> imageModel, int position) {
+                    public void convert(GouwucheViewHolder holder, List<ImageModel> imageModel, int position) {
                         loadGG(mIntails, type, holder, list, position);
                         connecting_shouye_ll.setVisibility(View.VISIBLE);
                         no_connect_shouye_ll.setVisibility(View.GONE);
@@ -197,19 +196,23 @@ public class ShouyeFragment extends BaseFragment {
                 guanggao_view.bindLinearLayout();
                 mSwipe.setRefreshing(false);
             }
-        }
+        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
+        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
+            @Override
+            public void load(List[] lists) {
+                list = lists;
+                HotClick(0, lists[0]);
+            }
+        }, mGoodUrl);
 
-                , "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-        mListener.loadGoodType(new ShouyeListener.OnLoad()
-
-        {
+        mListener.loadGoodType(new ShouyeListener.OnLoad() {
             @Override
             public void load(int type, final List list) {
-                mAdapter = new CommonAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
+                mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
                     @Override
-                    public void convert(CommonViewHolder holder, List<ImageModel> list, int position) {
+                    public void convert(GouwucheViewHolder holder, List<ImageModel> list, int position) {
                         ImageModel model = list.get(position);
-                        holder.loadImageByUrl(R.id.type_iv, model);
+                        holder.loadByImage(R.id.type_iv, model.getImage());
                         holder.setText(R.id.type_title_tv, model.getTitle());
                         holder.setText(R.id.type_desc1_tv, model.getT1());
                         holder.setText(R.id.type_desc2_tv, model.getT2());
@@ -232,20 +235,7 @@ public class ShouyeFragment extends BaseFragment {
                 });
                 mSwipe.setRefreshing(false);
             }
-        }
-
-                , "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
-        mListener.loadHotGood(new ShouyeListener.OnLoadHot()
-
-        {
-            @Override
-            public void load(List[] lists) {
-                list = lists;
-                HotClick(0, lists[0]);
-            }
-        }
-
-                , mGoodUrl);
+        }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
     }
 
     List<ChangeItemModel> mItemList;
@@ -272,9 +262,9 @@ public class ShouyeFragment extends BaseFragment {
         pressedModel.getRl().setBackgroundColor(mIntails.getResources().getColor(R.color.white));
         pressedModel.getLl().setVisibility(View.GONE);
         clickItem = position;
-        mAdapters = new CommonAdapter<GoodModel>(mIntails, mList, R.layout.item_main_hot_good) {
+        mAdapters = new GouwucheAdapter<GoodModel>(mIntails, mList, R.layout.item_main_hot_good) {
             @Override
-            public void convert(CommonViewHolder holder, List<GoodModel> list, int position) {
+            public void convert(GouwucheViewHolder holder, List<GoodModel> list, int position) {
                 GoodModel model = list.get(position);
                 holder.loadByUrl(R.id.good_iv, model.getImage());
                 if (model.getName().length() > 8) {
@@ -292,24 +282,24 @@ public class ShouyeFragment extends BaseFragment {
     }
 
     //加载广告布局
-    private void loadGG(Context context, int type, CommonViewHolder holder, final List list, int position) {
+    private void loadGG(Context context, int type, GouwucheViewHolder holder, final List<ImageModel> list, int position) {
         int width = Utils.getScannerWidth(context);//获得屏幕宽度
         switch (type) {
             case 3:
                 if (position == 0) {
                     holder.setHeight(R.id.total_left_ll, (width - 15) / 2);
-                    holder.loadImageByUrl(R.id.total_left_one_iv, list.get(0));
-                    holder.loadImageByUrl(R.id.total_right_two_iv, list.get(3));
-                    holder.loadImageByUrl(R.id.total_right_three_iv, list.get(4));
+                    holder.loadByImage(R.id.total_left_one_iv, list.get(0).getImage());
+                    holder.loadByImage(R.id.total_right_two_iv, list.get(3).getImage());
+                    holder.loadByImage(R.id.total_right_three_iv, list.get(4).getImage());
                     holder.setMargin(R.id.total_right_ll_right, 0, 0, 0, 0);
                     holder.setVisible(R.id.total_right_ll_right, true);
                 } else if (position == 1) {
                     holder.setHeight(R.id.total_left_ll, (width - 20) / 4);
                     holder.setVisible(R.id.total_right_ll_right, true);
-                    holder.loadImageByUrl(R.id.total_left_one_iv, list.get(1));
-                    holder.loadImageByUrl(R.id.total_left_two_iv, list.get(2));
-                    holder.loadImageByUrl(R.id.total_right_one_iv, list.get(5));
-                    holder.loadImageByUrl(R.id.total_right_two_iv, list.get(6));
+                    holder.loadByImage(R.id.total_left_one_iv, list.get(1).getImage());
+                    holder.loadByImage(R.id.total_left_two_iv, list.get(2).getImage());
+                    holder.loadByImage(R.id.total_right_one_iv, list.get(5).getImage());
+                    holder.loadByImage(R.id.total_right_two_iv, list.get(6).getImage());
                 } else {
                     setOtherGone(holder);
                 }
@@ -331,7 +321,7 @@ public class ShouyeFragment extends BaseFragment {
     }
 
     //设置其他内容隐藏
-    private void setOtherGone(CommonViewHolder holder) {
+    private void setOtherGone(GouwucheViewHolder holder) {
         holder.setVisible(R.id.totalItem_ll, false);
         holder.setVisible(R.id.total_left_ll, false);
         holder.setVisible(R.id.total_right_ll, false);
@@ -359,10 +349,6 @@ public class ShouyeFragment extends BaseFragment {
                 break;
             case R.id.hot_zuixin_rl:
                 HotClick(2, list[2]);
-                break;
-            case R.id.no_connect_shouye_btn://刷新按钮
-                mSwipe.setRefreshing(true);//开始刷新
-                loadDatas();
                 break;
             case R.id.fenlei_xiangqing_ll://点击跳转到商品类型
                 mClick.onItemClick(1);

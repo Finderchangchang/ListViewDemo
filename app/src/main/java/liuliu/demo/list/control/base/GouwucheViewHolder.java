@@ -43,14 +43,14 @@ public class GouwucheViewHolder {
     private ImageLoadingListenerImpl mImageLoadingListenerImpl;
 
     private GouwucheViewHolder(Context context, ViewGroup parent, int layoutId,
-                               int position, ImageLoader loader) {
+                               int position) {
         this.mContext = context;
         this.mPosition = position;
         this.mViews = new SparseArray<View>();
         mConvertView = LayoutInflater.from(context).inflate(layoutId, parent,
                 false);
         mConvertView.setTag(this);
-        mImageLoader = loader;
+        mImageLoader = ImageLoader.getInstance();
         mDisplayImageOptions = new DisplayImageOptions.Builder()
                 .showStubImage(R.mipmap.ic_default_adimage)
                 .showImageForEmptyUri(R.mipmap.ic_default_adimage)
@@ -73,9 +73,9 @@ public class GouwucheViewHolder {
      * @return
      */
     public static GouwucheViewHolder get(Context context, View convertView,
-                                         ViewGroup parent, int layoutId, int position, ImageLoader loader) {
+                                         ViewGroup parent, int layoutId, int position) {
         if (convertView == null) {
-            return new GouwucheViewHolder(context, parent, layoutId, position, loader);
+            return new GouwucheViewHolder(context, parent, layoutId, position);
         }
         return (GouwucheViewHolder) convertView.getTag();
     }

@@ -16,14 +16,12 @@ public abstract class GouwucheAdapter<T> extends BaseAdapter {
     protected List<T> mDatas;
     protected LayoutInflater mInflater;
     private int layoutId;
-    private ImageLoader mImageLoader;
 
-    public GouwucheAdapter(Context context, List<T> datas, int layoutId, ImageLoader loader) {
+    public GouwucheAdapter(Context context, List<T> datas, int layoutId) {
         this.mContext = context;
         mInflater = LayoutInflater.from(context);
         this.mDatas = datas;
         this.layoutId = layoutId;
-        this.mImageLoader = loader;
     }
 
     @Override
@@ -49,7 +47,7 @@ public abstract class GouwucheAdapter<T> extends BaseAdapter {
     }
 
     private GouwucheViewHolder getViewHolder(int position, View convertView, ViewGroup parent) {
-        return GouwucheViewHolder.get(mContext, convertView, parent, layoutId, position, mImageLoader);
+        return GouwucheViewHolder.get(mContext, convertView, parent, layoutId, position);
     }
 
     public abstract void convert(GouwucheViewHolder holder, List<T> t, int position);

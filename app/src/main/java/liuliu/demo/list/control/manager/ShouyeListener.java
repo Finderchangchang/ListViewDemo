@@ -11,6 +11,7 @@ import java.util.List;
 
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.AnalyzeBase;
+import liuliu.demo.list.control.base.AnalyzeBase;
 import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
 
@@ -27,12 +28,13 @@ public class ShouyeListener {
     }
 
     public void loadTop(final OnLoadTop load, String url) {
-        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+        guanggao.getJson("topimg", new AnalyzeBase.OnLoadData() {
             ImageModel model;
+
             @Override
             public void load(boolean result, final Object object) {
-                JSONArray json = (JSONArray) object;
                 try {
+                    JSONArray json = new JSONArray(object.toString());
                     List list = new ArrayList();
                     for (int i = 0; i < json.length(); i++) {
                         model = new ImageModel();
@@ -44,18 +46,18 @@ public class ShouyeListener {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
             }
         }, url);
     }
 
     public void loadGuanggao(final OnLoad load, String url) {
-        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+        guanggao.getJson("guanggao", new AnalyzeBase.OnLoadData() {
             ImageModel model;
+
             @Override
             public void load(boolean result, final Object object) {
-                JSONObject json = (JSONObject) object;
                 try {
+                    JSONObject json = new JSONObject(object.toString());
                     int type = json.getInt("type");
                     JSONArray array = json.getJSONArray("content");
                     List list = new ArrayList();
@@ -75,13 +77,13 @@ public class ShouyeListener {
     }
 
     public void loadGoodType(final OnLoad load, String url) {
-        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+        guanggao.getJson("goodtype", new AnalyzeBase.OnLoadData() {
             ImageModel model;
 
             @Override
             public void load(boolean result, final Object object) {
-                JSONArray array = (JSONArray) object;
                 try {
+                    JSONArray array = new JSONArray(object.toString());
                     List list = new ArrayList();
                     for (int i = 0; i < array.length(); i++) {
                         model = (ImageModel) Utils.getObject("ImageModel", array.getJSONObject(i));
@@ -96,14 +98,14 @@ public class ShouyeListener {
     }
 
     public void loadHotGood(final OnLoadHot load, String url) {
-        guanggao.getJson(new AnalyzeBase.OnLoadData() {
+        guanggao.getJson("hotgood", new AnalyzeBase.OnLoadData() {
             GoodModel model;
 
             @Override
             public void load(boolean result, final Object object) {
-                JSONArray array = (JSONArray) object;
-                List[] lists = new List[array.length()];
                 try {
+                    JSONArray array = new JSONArray(object.toString());
+                    List[] lists = new List[array.length()];
                     List list;
                     for (int i = 0; i < array.length(); i++) {
                         list = new ArrayList();

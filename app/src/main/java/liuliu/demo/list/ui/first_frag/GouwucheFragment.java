@@ -83,7 +83,7 @@ public class GouwucheFragment extends BaseFragment {
         mListener.loadFace(new GouwucheListener.OnLoad() {
             @Override
             public void load(List list) {
-                mAdapter = new GouwucheAdapter<FacesModel>(mIntails, list, R.layout.item_main_gouwuche, mImageLoader) {
+                mAdapter = new GouwucheAdapter<FacesModel>(mIntails, list, R.layout.item_main_gouwuche) {
                     @Override
                     public void convert(GouwucheViewHolder holder, List<FacesModel> list, int position) {
                         FacesModel model = list.get(position);

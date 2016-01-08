@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import net.tsz.afinal.annotation.view.CodeNote;
 
 import java.util.ArrayList;
@@ -14,8 +12,8 @@ import java.util.List;
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
 import liuliu.demo.list.base.Utils;
-import liuliu.demo.list.control.base.GouwucheAdapter;
-import liuliu.demo.list.control.base.GouwucheViewHolder;
+import liuliu.demo.list.control.base.CommonAdapter;
+import liuliu.demo.list.control.base.CommonViewHolder;
 import liuliu.demo.list.control.manager.FenLeiListener;
 import liuliu.demo.list.model.ImageModel;
 import liuliu.demo.list.model.TypeModel;
@@ -26,7 +24,7 @@ import liuliu.demo.list.view.GridLinearLayout;
 /**
  * Created by Administrator on 2015/12/30.
  */
-public class FenleiFragment extends BaseFragment {
+public class FenleiFragments extends BaseFragment {
     @CodeNote(id = R.id.fenlei_view)
     GridLinearLayout recyclerView;//商品分类
     @CodeNote(id = R.id.fenlei_grid_view)
@@ -35,7 +33,7 @@ public class FenleiFragment extends BaseFragment {
     List<Button> good_type_list;
     FenLeiListener mListener;
     MainActivity mActivity;
-    GouwucheAdapter mAdapter;
+    CommonAdapter mAdapter;
     MainActivity mIntails;
     Utils mUtils;
 
@@ -71,9 +69,9 @@ public class FenleiFragment extends BaseFragment {
             TypeModel model = (TypeModel) list[i].get(0);
             title.add(model.getName());
         }
-        mAdapter = new GouwucheAdapter<String>(mActivity, title, R.layout.recycle_view_item_good_type) {
+        mAdapter = new CommonAdapter<String>(mActivity, title, R.layout.recycle_view_item_good_type) {
             @Override
-            public void convert(GouwucheViewHolder holder, List<String> t, final int position) {
+            public void convert(CommonViewHolder holder, List<String> t, final int position) {
                 Button btn = holder.getView(R.id.good_type_rv_button);
                 btn.setText(t.get(position).toString());
                 btn.setBackgroundResource(R.mipmap.good_type_item);
@@ -100,16 +98,18 @@ public class FenleiFragment extends BaseFragment {
     }
 
     private void refreshList(final List list) {
-        mAdapter = new GouwucheAdapter<TypeModel>(mActivity, list, R.layout.item_good_types) {
+        mAdapter = new CommonAdapter<TypeModel>(mActivity, list, R.layout.item_good_types) {
             @Override
-            public void convert(GouwucheViewHolder holder, List<TypeModel> models, final int position) {
+            public void convert(CommonViewHolder holder, List<TypeModel> models, final int position) {
                 TypeModel model = models.get(position);
+                ImageModel image = new ImageModel();
+                image.setImage(model.getImage());
+                holder.loadImageByUrl(R.id.good_iv, image);
                 String title = "全部商品";
                 if (position != 0) {
                     title = model.getName();
                 }
                 holder.setText(R.id.good_name_tv, title);
-                holder.loadByImage(R.id.good_iv, model.getImage());
             }
         };
         gridview.setAdapter(mAdapter);

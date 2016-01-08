@@ -38,6 +38,10 @@ public class AnalyzeBase {
     }
 
     public void getJson(final OnLoadData loadData, String url) {
+        getJson("", loadData, url);
+    }
+
+    public void getJson(final String type, final OnLoadData loadData, String url) {
         //判断当前网络状态
         if (Utils.isNetworkConnected(mIntails)) {//联网（访问网络数据）
             RequestQueue mQueue = Volley.newRequestQueue(mIntails);
@@ -47,6 +51,22 @@ public class AnalyzeBase {
                         public void onResponse(JSONObject response) {
                             try {
                                 if (response.getString("return").equals("OK")) {//请求成功触发事件
+                                    if (type != "") {//类型不为空，在缓存中读取数据
+                                        List<CacheModel> list = mDB.findAllByWhere(CacheModel.class, "type='" + type + "'");
+                                        CacheModel model = new CacheModel();
+                                        model.setType(type);
+                                        model.setData(response.getString("data"));
+                                        model.setError(response.getString("error"));
+                                        if (list.size() == 1) {
+                                            model.setId(list.get(0).getId());
+                                            mDB.update(model);
+                                        } else if (list.size() > 1) {
+                                            mDB.deleteByWhere(CacheModel.class, "type='" + type + "'");
+                                            mDB.save(model);
+                                        } else if (list.size() == 0) {
+                                            mDB.save(model);
+                                        }
+                                    }
                                     loadData.load(true, response.get("data"));
                                 }
                             } catch (JSONException e) {
@@ -65,12 +85,13 @@ public class AnalyzeBase {
             );
             mQueue.add(jsonObjectRequest);
         } else {//未联网
-            List<CacheModel> list = mDB.findAllByWhere(CacheModel.class, "type='guanggao'");
+            List<CacheModel> list = mDB.findAllByWhere(CacheModel.class, "type='" + type + "'");
             if (list.size() > 0) {
+                loadData.load(true, list.get(0).getData());
+            } else {
                 loadData.load(false, null);
             }
         }
-
     }
 
     /**
