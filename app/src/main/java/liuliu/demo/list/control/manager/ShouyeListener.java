@@ -16,6 +16,7 @@ import liuliu.demo.list.model.GoodModel;
 import liuliu.demo.list.model.ImageModel;
 
 /**
+ * 首页数据管理
  * Created by Administrator on 2015/12/29.
  */
 public class ShouyeListener {
