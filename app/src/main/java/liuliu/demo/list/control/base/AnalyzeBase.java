@@ -37,13 +37,13 @@ public class AnalyzeBase {
         mDB = FinalDb.create(mIntails);
     }
 
-    public void getJson(final OnLoadData loadData, String url) {
-        getJson("", loadData, url);
+    public void getJson(boolean isRefresh, final OnLoadData loadData, String url) {
+        getJson("", isRefresh, loadData, url);
     }
 
-    public void getJson(final String type, final OnLoadData loadData, String url) {
-        //判断当前网络状态
-        if (Utils.isNetworkConnected(mIntails)) {//联网（访问网络数据）
+    public void getJson(final String type, boolean isRefresh, final OnLoadData loadData, String url) {
+        //刷新，并且联网状态才访问网络数据//联网（访问网络数据）
+        if (isRefresh) {
             RequestQueue mQueue = Volley.newRequestQueue(mIntails);
             JsonRequest jsonObjectRequest = new JsonObjectRequest(url, null,
                     new Response.Listener<JSONObject>() {

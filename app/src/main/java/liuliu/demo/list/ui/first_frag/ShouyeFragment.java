@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,7 +24,9 @@ import com.squareup.picasso.Picasso;
 
 import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.CodeNote;
+import net.tsz.afinal.cache.ACache;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -125,6 +128,8 @@ public class ShouyeFragment extends BaseFragment {
     LinearLayout good_lists;//热门商品
     @CodeNote(id = R.id.isloading_shouye_ll)
     LinearLayout isloading_shouye;
+    @CodeNote(id = R.id.isloading_shouye_tv)
+    TextView error_tv;
 
     @Override
     public void initViews() {
@@ -152,32 +157,32 @@ public class ShouyeFragment extends BaseFragment {
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadUIs(true);
+                loadUIs();
             }
         });
-        loadUIs(false);
+        loadUIs();
     }
 
-    private boolean NoCache;//true，没缓存。false,有缓存
-
     /**
-     * @param isRefresh
+     *
      */
-    private void loadUIs(boolean isRefresh) {
-        handler.postDelayed(runnable, 10000);
+    private void loadUIs() {
         if (Utils.isNetworkConnected(mIntails)) {//联网状态加载数据
             loadDatas(true);
         } else {//未联网直接关闭
+            loadDatas(false);
             mSwipe.setRefreshing(false);
         }
     }
 
+    private List<Boolean> LoadingEnd = new ArrayList<>();
+
     private void loadDatas(boolean result) {
         //顶部广告
-        mListener.loadTop(new ShouyeListener.OnLoadTop() {
+        mListener.loadTop(result, new ShouyeListener.OnLoadTop() {
             @Override
             public void load(final List list) {
-                if (list.size() > 0) {
+                if (list != null) {
                     convenientBanner.setPages(new CBViewHolderCreator<LocalImageHolderView>() {
                         @Override
                         public LocalImageHolderView createHolder() {
@@ -190,69 +195,89 @@ public class ShouyeFragment extends BaseFragment {
                             Toast.makeText(mIntails, "position:" + position, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    LoadingEnd.add(true);
+                } else {
+                    LoadingEnd.add(false);
                 }
+                handler.sendEmptyMessage(1);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/focus.php");
-        mListener.loadGuanggao(new ShouyeListener.OnLoad() {
+        mListener.loadGuanggao(result, new ShouyeListener.OnLoad() {
             @Override
             public void load(final int type, final List list) {
-                mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
-                    @Override
-                    public void convert(GouwucheViewHolder holder, List<ImageModel> imageModel, int position) {
-                        setLoadingGone();
-                        guanggao_view.setVisibility(View.VISIBLE);
-                        loadGG(mIntails, type, holder, list, position);
-                    }
-                };
-                guanggao_view.setAdapter(mAdapter);
-                guanggao_view.setColumns(1);
-                guanggao_view.bindLinearLayout();
+                if (list != null) {
+                    mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.recycle_view_item_home) {
+                        @Override
+                        public void convert(GouwucheViewHolder holder, List<ImageModel> imageModel, int position) {
+                            setLoadingGone();
+                            guanggao_view.setVisibility(View.VISIBLE);
+                            loadGG(mIntails, type, holder, list, position);
+                        }
+                    };
+                    guanggao_view.setAdapter(mAdapter);
+                    guanggao_view.setColumns(1);
+                    guanggao_view.bindLinearLayout();
+                    LoadingEnd.add(true);
+                } else {
+                    LoadingEnd.add(false);
+                }
                 mSwipe.setRefreshing(false);
+                handler.sendEmptyMessage(1);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/ad.php");
-        mListener.loadHotGood(new ShouyeListener.OnLoadHot() {
+        mListener.loadHotGood(result, new ShouyeListener.OnLoadHot() {
             @Override
             public void load(List[] lists) {
-                if (lists.length > 0) {
+                if (lists != null) {
                     list = lists;
                     HotClick(0, lists[0]);
                     setLoadingGone();
                     good_lists.setVisibility(View.VISIBLE);
+                    LoadingEnd.add(true);
+                } else {
+                    LoadingEnd.add(false);
                 }
+                handler.sendEmptyMessage(1);
             }
         }, mGoodUrl);
 
-        mListener.loadGoodType(new ShouyeListener.OnLoad() {
+        mListener.loadGoodType(result, new ShouyeListener.OnLoad() {
             @Override
             public void load(int type, final List list) {
-                mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
-                    @Override
-                    public void convert(GouwucheViewHolder holder, List<ImageModel> list, int position) {
-                        ImageModel model = list.get(position);
-                        holder.loadByImage(R.id.type_iv, model.getImage());
-                        holder.setText(R.id.type_title_tv, model.getTitle());
-                        holder.setText(R.id.type_desc1_tv, model.getT1());
-                        holder.setText(R.id.type_desc2_tv, model.getT2());
-                        total_type.setVisibility(View.VISIBLE);
-                        setLoadingGone();
-                    }
-                };
-                goodtype_view.setAdapter(mAdapter);
-                goodtype_view.setColumns(2);
-                goodtype_view.bindLinearLayout();
-                goodtype_view.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
-                    @Override
-                    public void onCellClick(int index) {
-                        final ImageModel model = (ImageModel) list.get(index);
-                        mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
-                            @Override
-                            public void put(Intent intent) {//跳转到第二个Activity（用来显示）
-                                intent.putExtra("desc", "spfl%" + model.getTitle() + "&" + model.getLink());
-                            }
-                        });
-                    }
-                });
+                if (list != null) {
+                    mAdapter = new GouwucheAdapter<ImageModel>(mIntails, list, R.layout.item_main_fenlei) {
+                        @Override
+                        public void convert(GouwucheViewHolder holder, List<ImageModel> list, int position) {
+                            ImageModel model = list.get(position);
+                            holder.loadByImage(R.id.type_iv, model.getImage());
+                            holder.setText(R.id.type_title_tv, model.getTitle());
+                            holder.setText(R.id.type_desc1_tv, model.getT1());
+                            holder.setText(R.id.type_desc2_tv, model.getT2());
+                            total_type.setVisibility(View.VISIBLE);
+                            setLoadingGone();
+                        }
+                    };
+                    goodtype_view.setAdapter(mAdapter);
+                    goodtype_view.setColumns(2);
+                    goodtype_view.bindLinearLayout();
+                    goodtype_view.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
+                        @Override
+                        public void onCellClick(int index) {
+                            final ImageModel model = (ImageModel) list.get(index);
+                            mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+                                @Override
+                                public void put(Intent intent) {//跳转到第二个Activity（用来显示）
+                                    intent.putExtra("desc", "spfl%" + model.getTitle() + "?" + model.getLink().split("\\?")[1]);
+                                }
+                            });
+                        }
+                    });
+                    LoadingEnd.add(true);
+                } else {
+                    LoadingEnd.add(false);
+                }
                 mSwipe.setRefreshing(false);
+                handler.sendEmptyMessage(1);
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/home/category.php");
     }
@@ -266,7 +291,7 @@ public class ShouyeFragment extends BaseFragment {
      * @param position 选中的位置
      * @param mList    商品信息集合
      */
-    private void HotClick(final int position, final List mList) {
+    private void HotClick(final int position, final List<GoodModel> mList) {
         normalModel = mItemList.get(clickItem);
         pressedModel = mItemList.get(position);
         //恢复成未点击状态
@@ -285,7 +310,7 @@ public class ShouyeFragment extends BaseFragment {
             @Override
             public void convert(GouwucheViewHolder holder, List<GoodModel> list, int position) {
                 GoodModel model = list.get(position);
-                holder.loadByUrl(R.id.good_iv, model.getImage());
+                holder.loadByImage(R.id.good_iv, model.getImage());
                 if (model.getName().length() > 8) {
                     holder.setText(R.id.good_name_tv, model.getName().substring(0, 8) + "..");
                 } else {
@@ -297,6 +322,18 @@ public class ShouyeFragment extends BaseFragment {
         hotgood_view.setAdapter(mAdapters);
         hotgood_view.setColumns(2);
         hotgood_view.bindLinearLayout();
+        hotgood_view.setOnCellClickListener(new GridLinearLayout.OnCellClickListener() {
+            @Override
+            public void onCellClick(final int index) {
+                final GoodModel model = mList.get(index);
+                mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+                    @Override
+                    public void put(Intent intent) {
+                        intent.putExtra("desc", "xq%id?" + model.getId());
+                    }
+                });
+            }
+        });
         mSwipe.setRefreshing(false);
     }
 
@@ -307,18 +344,18 @@ public class ShouyeFragment extends BaseFragment {
             case 3:
                 if (position == 0) {
                     holder.setHeight(R.id.total_left_ll, (width - 15) / 2);
-                    holder.loadByImage(R.id.total_left_one_iv, list.get(0).getImage());
-                    holder.loadByImage(R.id.total_right_two_iv, list.get(3).getImage());
-                    holder.loadByImage(R.id.total_right_three_iv, list.get(4).getImage());
+                    holder.loadGuanggaoByImage(R.id.total_left_one_iv, list.get(0));
+                    holder.loadGuanggaoByImage(R.id.total_right_two_iv, list.get(3));
+                    holder.loadGuanggaoByImage(R.id.total_right_three_iv, list.get(4));
                     holder.setMargin(R.id.total_right_ll_right, 0, 0, 0, 0);
                     holder.setVisible(R.id.total_right_ll_right, true);
                 } else if (position == 1) {
                     holder.setHeight(R.id.total_left_ll, (width - 20) / 4);
                     holder.setVisible(R.id.total_right_ll_right, true);
-                    holder.loadByImage(R.id.total_left_one_iv, list.get(1).getImage());
-                    holder.loadByImage(R.id.total_left_two_iv, list.get(2).getImage());
-                    holder.loadByImage(R.id.total_right_one_iv, list.get(5).getImage());
-                    holder.loadByImage(R.id.total_right_two_iv, list.get(6).getImage());
+                    holder.loadGuanggaoByImage(R.id.total_left_one_iv, list.get(1));
+                    holder.loadGuanggaoByImage(R.id.total_left_two_iv, list.get(2));
+                    holder.loadGuanggaoByImage(R.id.total_right_one_iv, list.get(5));
+                    holder.loadGuanggaoByImage(R.id.total_right_two_iv, list.get(6));
                 } else {
                     setOtherGone(holder);
                 }
@@ -352,7 +389,7 @@ public class ShouyeFragment extends BaseFragment {
                 mClick.onItemClick(1);
                 break;
             case R.id.main_my_order_ll://跳转到订单列表
-//                MainActivity.mIntails.mUtils.IntentPost(DingDanActivity.class);
+                MainActivity.mIntails.mUtils.IntentPost(DetailListsActivity.class);
                 break;
             case R.id.main_user_unit_ll:
                 mClick.onItemClick(2);
@@ -394,7 +431,6 @@ public class ShouyeFragment extends BaseFragment {
 
     public interface OnItemClick {
         void onItemClick(Object value);//value为传入的值
-
     }
 
     public void setOnItemClick(OnItemClick click) {
@@ -413,12 +449,24 @@ public class ShouyeFragment extends BaseFragment {
         convenientBanner.stopTurning();
     }
 
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
+    Handler handler = new Handler() {
         @Override
-        public void run() {
-            handler.postDelayed(this, 10000);
-            isloading_shouye.setVisibility(View.GONE);
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                if (LoadingEnd.size() == 4) {
+                    boolean result = false;
+                    for (boolean res : LoadingEnd) {
+                        if (res) {
+                            result = true;
+                        }
+                    }
+                    if (result) {//隐藏load显示正常数据
+                        isloading_shouye.setVisibility(View.GONE);
+                    } else {//无网络（显示）
+                        error_tv.setText("请检查网络连接");
+                    }
+                }
+            }
         }
     };
 

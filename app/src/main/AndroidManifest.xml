@@ -25,5 +25,6 @@
         <activity android:name=".ui.activity.DemoActivity">
 
         </activity>
+        <activity android:name=".ui.activity.SearchActivity" />
     </application>
 </manifest>

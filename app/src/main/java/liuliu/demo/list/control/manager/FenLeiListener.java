@@ -27,25 +27,29 @@ public class FenLeiListener {
         jsonbase = new AnalyzeBase(mContext);
     }
 
-    public void loadFenlei(final OnLoad load, String url) {
-        jsonbase.getJson("fenlei", new AnalyzeBase.OnLoadData() {
+    public void loadFenlei(boolean isRefresh, final OnLoad load, String url) {
+        jsonbase.getJson("fenlei", isRefresh, new AnalyzeBase.OnLoadData() {
             @TargetApi(Build.VERSION_CODES.KITKAT)
             @Override
             public void load(boolean result, final Object object) {
                 try {
-                    JSONArray json = new JSONArray(object.toString());
-                    List[] lists = new List[json.length()];
-                    for (int i = 0; i < json.length(); i++) {
-                        List<TypeModel> list = new ArrayList<TypeModel>();
-                        JSONObject obj = json.getJSONObject(i);
-                        list.add(loadModel(obj));
-                        JSONArray array = obj.getJSONArray("small");
-                        for (int j = 0; j < array.length(); j++) {
-                            list.add(loadModel(array.getJSONObject(j)));
+                    if (result) {
+                        JSONArray json = new JSONArray(object.toString());
+                        List[] lists = new List[json.length()];
+                        for (int i = 0; i < json.length(); i++) {
+                            List<TypeModel> list = new ArrayList<TypeModel>();
+                            JSONObject obj = json.getJSONObject(i);
+                            list.add(loadModel(obj));
+                            JSONArray array = obj.getJSONArray("small");
+                            for (int j = 0; j < array.length(); j++) {
+                                list.add(loadModel(array.getJSONObject(j)));
+                            }
+                            lists[i] = list;
                         }
-                        lists[i] = list;
+                        load.load(lists);
+                    } else {
+                        load.load(null);
                     }
-                    load.load(lists);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

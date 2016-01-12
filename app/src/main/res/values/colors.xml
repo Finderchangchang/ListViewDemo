@@ -6,6 +6,8 @@
     <color name="main_item_line">#E2E2E2</color>
     <color name="total_bg">#F1F1F1</color>
     <color name="main_line">#DDDDDD</color>
+    <color name="title_bg">#9D2222</color>
+    <color name="biao_qian_bg">#BA0101</color>
     <color name="main_dibu_press">#BB2200</color>
     <color name="main_dibu_normal">#4A4A4A</color>
     <color name="good_type_btn_press">#12B059</color>

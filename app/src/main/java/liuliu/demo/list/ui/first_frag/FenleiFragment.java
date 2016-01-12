@@ -1,8 +1,12 @@
 package liuliu.demo.list.ui.first_frag;
 
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -31,6 +35,12 @@ public class FenleiFragment extends BaseFragment {
     GridLinearLayout recyclerView;//商品分类
     @CodeNote(id = R.id.fenlei_grid_view)
     GridLinearLayout gridview;
+    @CodeNote(id = R.id.fenlei_error_ll)
+    LinearLayout fenlei_error;
+    @CodeNote(id = R.id.fenlei_view_ll)
+    LinearLayout fenlei_view;
+    @CodeNote(id = R.id.srf_layout_main)
+    SwipeRefreshLayout mSwipe;
     int mGoodTypeClick;//被点击的项
     List<Button> good_type_list;
     FenLeiListener mListener;
@@ -50,14 +60,39 @@ public class FenleiFragment extends BaseFragment {
     public void initEvents() {
         mActivity = MainActivity.mIntails;
         mListener = new FenLeiListener(mActivity);
-        //设置布局管理器
-        good_type_list = new ArrayList<>();
-        mListener.loadFenlei(new FenLeiListener.OnLoad() {
+
+        mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadDatas();
+            }
+        });
+        loadDatas();
+    }
+
+    private void loadDatas() {
+        boolean result;
+        if (Utils.isNetworkConnected(mIntails)) {//有网从后台读
+            result = true;
+        } else {//未联网从缓存读
+            result = false;
+        }
+        mListener.loadFenlei(result, new FenLeiListener.OnLoad() {
             @Override
             public void load(List[] list) {
-                loadFenLei(list);
+                if (list == null) {//未读取出数据(数据为空)
+                    fenlei_error.setVisibility(View.VISIBLE);
+                    fenlei_error.setLayoutParams(new RelativeLayout.LayoutParams(Utils.getScannerWidth(mIntails), Utils.getScannerHeight(mIntails) - 250));
+                    fenlei_view.setVisibility(View.GONE);
+                } else {
+                    loadFenLei(list);
+                    fenlei_error.setVisibility(View.GONE);
+                    fenlei_view.setVisibility(View.VISIBLE);
+                }
+
             }
         }, "http://www.hesq.com.cn/fresh/fore/logic/app/product/category.php");
+        mSwipe.setRefreshing(false);
     }
 
     /**
@@ -67,6 +102,8 @@ public class FenleiFragment extends BaseFragment {
      */
     public void loadFenLei(final List list[]) {
         List<String> title = new ArrayList();
+        //设置布局管理器
+        good_type_list = new ArrayList<>();
         for (int i = 0; i < list.length; i++) {
             TypeModel model = (TypeModel) list[i].get(0);
             title.add(model.getName());
@@ -99,7 +136,7 @@ public class FenleiFragment extends BaseFragment {
         refreshList(list[mGoodTypeClick]);
     }
 
-    private void refreshList(final List list) {
+    private void refreshList(final List<TypeModel> list) {
         mAdapter = new GouwucheAdapter<TypeModel>(mActivity, list, R.layout.item_good_types) {
             @Override
             public void convert(GouwucheViewHolder holder, List<TypeModel> models, final int position) {
@@ -121,15 +158,21 @@ public class FenleiFragment extends BaseFragment {
                 mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
                     @Override
                     public void put(Intent intent) {
-                        TypeModel model = (TypeModel) list.get(index);
-                        TypeModel first = (TypeModel) list.get(0);
+                        TypeModel model = list.get(index);
+                        TypeModel first = list.get(0);
                         String link;
                         if (index > 0) {
                             link = "bid=" + first.getSid() + "&sid=" + model.getSid();
                         } else {
                             link = "bid=" + first.getSid();
                         }
-                        intent.putExtra("desc", "spfl?" + link);
+                        String name;
+                        if (index == 0) {
+                            name = "全部商品";
+                        } else {
+                            name = list.get(index).getName();
+                        }
+                        intent.putExtra("desc", "spfl%" + name + "?" + link);
                     }
                 });
             }

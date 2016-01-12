@@ -1,6 +1,7 @@
 package liuliu.demo.list.control.base;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,8 +24,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import liuliu.demo.list.R;
+import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
 import liuliu.demo.list.model.ImageModel;
+import liuliu.demo.list.ui.activity.DetailListsActivity;
+import liuliu.demo.list.ui.activity.MainActivity;
 import me.xiaopan.sketch.SketchImageView;
 
 /**
@@ -209,6 +213,28 @@ public class GouwucheViewHolder {
         return this;
     }
 
+    public GouwucheViewHolder loadGuanggaoByImage(int viewId, final ImageModel model) {
+        ImageView view = getView(viewId);
+        view.setVisibility(View.VISIBLE);
+        try {
+            //加载图片
+            mImageLoader.displayImage(
+                    model.getImage(),
+                    view,
+                    mDisplayImageOptions,
+                    mImageLoadingListenerImpl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jiexiLink(model.getLink());
+            }
+        });
+        return this;
+    }
+
     public Bitmap getBitmapFromRes(int resId) {
         Resources res = mContext.getResources();
         return BitmapFactory.decodeResource(res, resId);
@@ -268,5 +294,31 @@ public class GouwucheViewHolder {
                 }
             }
         }
+    }
+
+    /**
+     * 解析link
+     *
+     * @param link = "../product/detail.php?id=852";
+     */
+    private void jiexiLink(final String link) {
+        MainActivity.mIntails.mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+            @Override
+            public void put(Intent intent) {
+                String desc = "";
+                if (link.contains("product")) {
+                    if (link.contains("detail.php")) {//跳转到商品的详细页面
+                        desc = "xq%id?" + link.split("=")[1];
+                    } else if (link.contains("list.php")) {//跳转到商品分类
+                        desc = "spfl%" + "name" + "?" + link.split("\\?")[1];
+                    }
+                } else if (link.contains("user")) {//跳转到帮助中心
+                    if (link.contains("help.php")) {
+                        desc = "help%";
+                    }
+                }
+                intent.putExtra("desc", desc);
+            }
+        });
     }
 }

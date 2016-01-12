@@ -1,6 +1,7 @@
 package liuliu.demo.list.ui.last_frag;
 
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 
 import net.tsz.afinal.annotation.view.CodeNote;
@@ -24,7 +25,7 @@ import liuliu.demo.list.view.LoadListView;
  * 商品列表
  * Created by Administrator on 2015/12/10.
  */
-public class FenLeiListFragment extends BaseFragment {
+public class GoodListFragment extends BaseFragment {
     @CodeNote(id = R.id.type_list_grid_view)
     LoadListView listView;
     GoodListListener mListener;
@@ -47,14 +48,14 @@ public class FenLeiListFragment extends BaseFragment {
         mIntails = DetailListsActivity.mIntails;
         mListener = new GoodListListener(mIntails);
         mGoods = new ArrayList<>();
-        String title = mIntails.getDesc().split("&")[0];
-        link = mIntails.getDesc().split("&")[1].split("\\?")[1];
+        String title = mIntails.getDesc().split("\\?")[0];
+        link = mIntails.getDesc().split("\\?")[1];
         term = "http://www.hesq.com.cn/fresh/fore/logic/app/product/list.php";
         loads();
     }
 
     private void loads() {
-        mListener.loadList(new GoodListListener.OnLoad() {
+        mListener.loadList(true, new GoodListListener.OnLoad() {
             @Override
             public void load(boolean tail, List<GoodDetailModel> list) {
                 loadGoodList(tail, list);
@@ -117,6 +118,12 @@ public class FenLeiListFragment extends BaseFragment {
                     if (!isBottom) {
                         loads();
                     }
+                }
+            });
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 }
             });
             mAdapters.notifyDataSetChanged();

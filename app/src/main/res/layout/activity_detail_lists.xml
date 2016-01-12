@@ -5,15 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<liuliu.custom.control.toolbar.TToolbar-->
-        <!--android:id="@+id/main_toolbar"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--app:center_et_hint="请输入搜索关键字"-->
-        <!--app:left_img="@mipmap/ic_arrow_drop_down_black_24dp"-->
-        <!--app:left_title="竞秀"-->
-        <!--app:right_img="@mipmap/ttoolbar_message" />-->
-
     <FrameLayout
         android:id="@+id/frag_ll"
         android:layout_width="match_parent"

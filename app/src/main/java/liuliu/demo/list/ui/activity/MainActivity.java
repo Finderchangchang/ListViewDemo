@@ -1,10 +1,12 @@
 package liuliu.demo.list.ui.activity;
 
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -12,10 +14,13 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import net.tsz.afinal.annotation.view.CodeNote;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import liuliu.demo.list.R;
+import liuliu.demo.list.base.BaseActivity;
 import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.ItemModel;
@@ -24,7 +29,7 @@ import liuliu.demo.list.ui.first_frag.GouwucheFragment;
 import liuliu.demo.list.ui.first_frag.ShouyeFragment;
 import liuliu.demo.list.ui.first_frag.WodeFragment;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     public static MainActivity mIntails;
     FrameLayout frag_ll;
     LinearLayout shouye_ll;
@@ -42,10 +47,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     int mClick;//被点击的项
     List<ChangeItemModel> listbtn;//生成的按钮集合（需要颜色改变的view）
     List<ItemModel> mItems;
+    @CodeNote(id = R.id.key_word_shouye_et, click = "onClick")
+    EditText key_word_et;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void initViews() {
         setContentView(R.layout.activity_main);
         mIntails = this;
         listbtn = new ArrayList<>();
@@ -54,6 +60,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         loadUi();
         setItem(0);
         now_pressed = mClick;
+    }
+
+    @Override
+    public void initEvents() {
+
+    }
+
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.key_word_shouye_et:
+                mUtils.IntentPost(SearchActivity.class);
+                break;
+            case R.id.total_bottom_shouye_ll:
+                if (now_pressed != 0) {
+                    setItem(0);
+                    now_pressed = 0;
+                }
+                break;
+            case R.id.total_bottom_fenlei_ll:
+                if (now_pressed != 1) {
+                    setItem(1);
+                    now_pressed = 1;
+                }
+                break;
+            case R.id.total_bottom_wode_ll:
+                if (now_pressed != 2) {
+                    setItem(2);
+                    now_pressed = 2;
+                }
+                break;
+            case R.id.total_bottom_gouwuche_ll:
+                if (now_pressed != 3) {
+                    setItem(3);
+                    now_pressed = 3;
+                }
+                break;
+        }
     }
 
     private void loadUi() {
@@ -169,33 +212,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private int now_pressed = -1;
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.total_bottom_shouye_ll:
-                if (now_pressed != 0) {
-                    setItem(0);
-                    now_pressed = 0;
-                }
-                break;
-            case R.id.total_bottom_fenlei_ll:
-                if (now_pressed != 1) {
-                    setItem(1);
-                    now_pressed = 1;
-                }
-                break;
-            case R.id.total_bottom_wode_ll:
-                if (now_pressed != 2) {
-                    setItem(2);
-                    now_pressed = 2;
-                }
-                break;
-            case R.id.total_bottom_gouwuche_ll:
-                if (now_pressed != 3) {
-                    setItem(3);
-                    now_pressed = 3;
-                }
-                break;
-        }
-    }
 }

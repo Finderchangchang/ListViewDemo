@@ -26,8 +26,8 @@ public class GoodListListener {
         jsonbase = new AnalyzeBase(mContext);
     }
 
-    public void loadList(final OnLoad load, String url) {
-        jsonbase.getJson(new AnalyzeBase.OnLoadData() {
+    public void loadList(boolean isRefresh, final OnLoad load, String url) {
+        jsonbase.getJson(isRefresh, new AnalyzeBase.OnLoadData() {
             @Override
             public void load(boolean result, final Object object) {
                 JSONObject obj = (JSONObject) object;

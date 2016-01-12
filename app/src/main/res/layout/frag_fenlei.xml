@@ -1,31 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/srf_layout_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/total_bg">
+    android:background="@color/total_bg"
+    tools:context=".ui.activity.MainActivity">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@color/total_bg">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <liuliu.demo.list.view.GridLinearLayout
-                android:id="@+id/fenlei_view"
+            <LinearLayout
+                android:id="@+id/fenlei_view_ll"
                 android:layout_width="match_parent"
-                android:layout_height="130dp"
-                android:layout_margin="5dp" />
-        </LinearLayout>
-        <liuliu.demo.list.view.GridLinearLayout
-            android:id="@+id/fenlei_grid_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="10dp"
-            android:paddingTop="10dp" />
-    </LinearLayout>
-</ScrollView>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white">
+
+                    <liuliu.demo.list.view.GridLinearLayout
+                        android:id="@+id/fenlei_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="130dp"
+                        android:layout_margin="5dp" />
+                </LinearLayout>
+
+                <liuliu.demo.list.view.GridLinearLayout
+                    android:id="@+id/fenlei_grid_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:paddingTop="10dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fenlei_error_ll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="请检查网络连接"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </RelativeLayout>
+    </ScrollView>
+</android.support.v4.widget.SwipeRefreshLayout>
