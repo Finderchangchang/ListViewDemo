@@ -1,5 +1,7 @@
 package liuliu.demo.list.ui.first_frag;
 
+import android.util.Log;
+
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
 
@@ -15,5 +17,11 @@ public class WodeFragment extends BaseFragment {
     @Override
     public void initEvents() {
 
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        Log.i("hidden", hidden + "");
+        super.onHiddenChanged(hidden);
     }
 }

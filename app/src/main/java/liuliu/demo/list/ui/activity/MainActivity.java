@@ -3,16 +3,12 @@ package liuliu.demo.list.ui.activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
@@ -25,7 +21,7 @@ import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.model.ChangeItemModel;
 import liuliu.demo.list.model.ItemModel;
 import liuliu.demo.list.ui.first_frag.FenleiFragment;
-import liuliu.demo.list.ui.first_frag.GouwucheFragment;
+import liuliu.demo.list.ui.last_frag.GouwucheFragment;
 import liuliu.demo.list.ui.first_frag.ShouyeFragment;
 import liuliu.demo.list.ui.first_frag.WodeFragment;
 
@@ -91,10 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 }
                 break;
             case R.id.total_bottom_gouwuche_ll:
-                if (now_pressed != 3) {
-                    setItem(3);
-                    now_pressed = 3;
-                }
+                setItem(3);
                 break;
         }
     }
@@ -127,17 +120,20 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void setItem(int position) {
-        //恢复成未点击状态
-        listbtn.get(mClick).getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_normal));
-        Bitmap bitmap = Utils.readBitMap(mIntails, mItems.get(mClick).getNormal_img());
-        listbtn.get(mClick).getIv().setImageBitmap(bitmap);
-        //设置为点击状态
-        listbtn.get(position).getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_pressed));
-        listbtn.get(position).getIv().setImageBitmap(Utils.readBitMap(mIntails, mItems.get(position).getPressed_img()));
-        mClick = position;
-        // 开启一个Fragment事务
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        hideFragments(transaction);
+        FragmentTransaction transaction = null;
+        if (position < 3) {
+            //恢复成未点击状态
+            listbtn.get(mClick).getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_normal));
+            Bitmap bitmap = Utils.readBitMap(mIntails, mItems.get(mClick).getNormal_img());
+            listbtn.get(mClick).getIv().setImageBitmap(bitmap);
+            //设置为点击状态
+            listbtn.get(position).getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_pressed));
+            listbtn.get(position).getIv().setImageBitmap(Utils.readBitMap(mIntails, mItems.get(position).getPressed_img()));
+            mClick = position;
+            // 开启一个Fragment事务
+            transaction = getFragmentManager().beginTransaction();
+            hideFragments(transaction);
+        }
         if (position == 0) {
             if (shouye == null) {
                 // 如果MessageFragment为空，则创建一个并添加到界面上
@@ -173,16 +169,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 transaction.show(wode);
             }
         } else if (position == 3) {
-            if (gouwuche == null) {
-                // 如果MessageFragment为空，则创建一个并添加到界面上
-                gouwuche = new GouwucheFragment();
-                transaction.add(R.id.frag_ll, gouwuche);
-            } else {
-                // 如果MessageFragment不为空，则直接将它显示出来
-                transaction.show(gouwuche);
-            }
+            mUtils.IntentPost(DetailListsActivity.class, new Utils.putListener() {
+                @Override
+                public void put(Intent intent) {//跳转到第二个Activity（用来显示）
+                    intent.putExtra("desc", "gwc%");
+                }
+            });
         }
-        transaction.commit();
+        if (position < 3) {
+            transaction.commit();
+        }
     }
 
     private ShouyeFragment shouye;

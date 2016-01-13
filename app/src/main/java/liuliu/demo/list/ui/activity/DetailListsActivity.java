@@ -1,14 +1,20 @@
 package liuliu.demo.list.ui.activity;
 
+import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.view.KeyEvent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseActivity;
 import liuliu.demo.list.base.Utils;
+import liuliu.demo.list.ui.last_frag.GouwucheFragment;
 import liuliu.demo.list.ui.last_frag.GoodDetailFragment;
 import liuliu.demo.list.ui.last_frag.GoodListFragment;
 import liuliu.demo.list.ui.last_frag.HelpFragment;
@@ -24,7 +30,8 @@ public class DetailListsActivity extends BaseActivity {
     @CodeNote(id = R.id.total_botton)
     LinearLayout bottom_ll;
     String mDesc;
-    Utils mUtils;
+    public Utils mUtils;
+    List<Fragment> mFragment;
 
     @Override
     public void initViews() {
@@ -32,32 +39,82 @@ public class DetailListsActivity extends BaseActivity {
         mIntails = this;
         mUtils = new Utils(mIntails);
         mDesc = mUtils.IntentGet(getIntent(), "desc");//获得传递过来的参数
+        mFragment = new ArrayList<>();
     }
+
+    GoodListFragment goodList;
+    GoodDetailFragment goodDetail;
+    HelpFragment help;
+    GouwucheFragment gouwuche;
 
     @Override
     public void initEvents() {
+        loadFragment(mDesc.split("%")[0]);
+    }
+
+    FragmentTransaction transaction;
+
+    public void loadFragment(String link) {
         // 开启Fragment事务
-        FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        switch (mDesc.split("%")[0]) {
+        transaction = getFragmentManager().beginTransaction();
+        hideFragments(transaction);
+        switch (link) {
             case "spfl"://跳转到商品分类列表（结果-- ../product/list.php?type=2）
-                transaction.replace(R.id.frag_ll, new GoodListFragment());
+                if (goodList == null) {
+                    goodList = new GoodListFragment();
+                    transaction.add(R.id.frag_ll, goodList);
+                    mFragment.add(goodList);
+                } else {
+                    transaction.show(goodList);
+                }
+
                 break;
             case "xq"://跳转到商品详情页面
-                transaction.replace(R.id.frag_ll, new GoodDetailFragment());
+                if (goodDetail == null) {
+                    goodDetail = new GoodDetailFragment();
+                    transaction.add(R.id.frag_ll, goodDetail);
+                    goodDetail.setOnItemClick(new GoodDetailFragment.OnItemClick() {
+                        @Override
+                        public void onItemClick() {
+                            loadFragment("gwc");
+                        }
+                    });
+                    mFragment.add(goodDetail);
+                } else {
+                    transaction.show(goodDetail);
+                }
                 break;
             case "help"://跳转到帮助中心页面
-                transaction.replace(R.id.frag_ll, new HelpFragment());
+                if (help == null) {
+                    help = new HelpFragment();
+                    transaction.add(R.id.frag_ll, help);
+                    mFragment.add(help);
+                } else {
+                    transaction.show(help);
+                }
                 break;
             case "gwc"://购物车
-//                transaction.replace(R.id.frag_ll, new GouwucheFragment());
+                if (gouwuche == null) {
+                    gouwuche = new GouwucheFragment();
+                    transaction.add(R.id.frag_ll, gouwuche);
+                    mFragment.add(gouwuche);
+                } else {
+                    transaction.show(gouwuche);
+                }
                 break;
             case ""://我的订单
                 break;
-
         }
         transaction.commit();
     }
 
+    private void hideFragments(FragmentTransaction transaction) {
+        for (int i = 0; i < mFragment.size(); i++) {
+            if (mFragment.get(i) != null) {
+                transaction.hide(mFragment.get(i));
+            }
+        }
+    }
 
     /**
      * 1.跳转到详情页面（xq=123）
@@ -67,5 +124,22 @@ public class DetailListsActivity extends BaseActivity {
             mDesc = mDesc.split("%")[1];
         }
         return mDesc;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            transaction = getFragmentManager().beginTransaction();
+            if (mFragment != null && mFragment.size() > 1) {
+                transaction.hide(mFragment.get(mFragment.size() - 1));
+                transaction.show(mFragment.get(mFragment.size() - 2));
+                mFragment.remove(mFragment.size() - 1);
+                transaction.commit();
+                return false;
+            } else {
+                this.finish();
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

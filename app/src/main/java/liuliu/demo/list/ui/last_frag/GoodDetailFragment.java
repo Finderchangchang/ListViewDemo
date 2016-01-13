@@ -1,15 +1,19 @@
 package liuliu.demo.list.ui.last_frag;
 
+import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.tsz.afinal.annotation.view.CodeNote;
 
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseFragment;
+import liuliu.demo.list.base.Utils;
 import liuliu.demo.list.ui.activity.DetailListsActivity;
+import liuliu.demo.list.ui.activity.MainActivity;
 
 /**
  * 商品详情
@@ -26,9 +30,12 @@ public class GoodDetailFragment extends BaseFragment {
     EditText num_count;
     @CodeNote(id = R.id.good_name_tv)
     TextView name_tv;//商品名称
+    @CodeNote(id = R.id.total_bottom_shouye_ll, click = "onClick")
+    LinearLayout total_bottom_shouye;
     int count;
     String good_id;//需要显示的商品编码
     DetailListsActivity mIntails = DetailListsActivity.mIntails;
+    OnItemClick mClick;
 
     @Override
     public void initViews() {
@@ -57,6 +64,17 @@ public class GoodDetailFragment extends BaseFragment {
                 break;
             case R.id.count_gouwuche_btn:
                 break;
+            case R.id.total_bottom_shouye_ll://购物车点击
+                mClick.onItemClick();
+                break;
         }
+    }
+
+    public interface OnItemClick {
+        void onItemClick();//value为传入的值
+    }
+
+    public void setOnItemClick(OnItemClick click) {
+        this.mClick = click;
     }
 }
