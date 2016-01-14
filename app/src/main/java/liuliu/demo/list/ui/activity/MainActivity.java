@@ -3,6 +3,7 @@ package liuliu.demo.list.ui.activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -45,6 +46,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     List<ItemModel> mItems;
     @CodeNote(id = R.id.key_word_shouye_et, click = "onClick")
     EditText key_word_et;
+    FragmentTransaction transaction = null;
 
     @Override
     public void initViews() {
@@ -120,7 +122,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void setItem(int position) {
-        FragmentTransaction transaction = null;
+
         if (position < 3) {
             //恢复成未点击状态
             listbtn.get(mClick).getTv().setTextColor(mIntails.getResources().getColor(R.color.main_item_normal));
@@ -207,5 +209,4 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private int now_pressed = -1;
-
 }

@@ -41,6 +41,7 @@ public class GoodListFragment extends BaseFragment {
     @CodeNote(id = R.id.is_loading)
     LinearLayout is_loading;//正在加载
     String link;
+    OnItemClick mClick;
 
     @Override
     public void initViews() {
@@ -79,12 +80,12 @@ public class GoodListFragment extends BaseFragment {
         listView.loadComplete(isBottom);//关闭底部进度条
     }
 
-    private void loadUi(List list) {
+    private void loadUi(List<GoodDetailModel> list) {
         is_loading.setVisibility(View.GONE);
         if (mAdapters == null) {
             mAdapters = new CommonAdapter<GoodDetailModel>(mIntails, list, R.layout.item_good_desc) {
                 @Override
-                public void convert(CommonViewHolder holder, List<GoodDetailModel> lists, int position) {
+                public void convert(CommonViewHolder holder, final List<GoodDetailModel> lists, final int position) {
                     GoodDetailModel goodModel = lists.get(position);
                     ImageModel model = new ImageModel();
                     model.setImage(goodModel.getImage());
@@ -108,6 +109,12 @@ public class GoodListFragment extends BaseFragment {
                     holder.setVisible(R.id.tejia_btn, goodModel.isIsArea());
                     holder.setVisible(R.id.maizeng_btn, goodModel.isIsPresent());
                     holder.setVisible(R.id.maiyou_btn, goodModel.isIsDrive());
+                    holder.setOnClickListener(R.id.item_good_desc_ll, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mClick.onItemClick(lists.get(position).getId());
+                        }
+                    });
                 }
             };
             listView.setAdapter(mAdapters);
@@ -120,13 +127,6 @@ public class GoodListFragment extends BaseFragment {
                     }
                 }
             });
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                }
-            });
-            mAdapters.notifyDataSetChanged();
         } else {
             mAdapters.notifyDataSetChanged();
         }
@@ -152,5 +152,13 @@ public class GoodListFragment extends BaseFragment {
             link = "key=" + link.split("&")[1].split("=")[1];
         }
         return "&" + link;
+    }
+
+    public interface OnItemClick {
+        void onItemClick(String position);//value为传入的值
+    }
+
+    public void setOnItemClick(OnItemClick click) {
+        this.mClick = click;
     }
 }

@@ -1,6 +1,5 @@
 package liuliu.demo.list.ui.activity;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,15 +7,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import in.srain.cube.image.CubeImageView;
-import in.srain.cube.image.ImageLoaderFactory;
-import in.srain.cube.image.impl.DefaultImageLoadHandler;
-import in.srain.cube.request.CacheAbleRequest;
+import net.frakbot.jumpingbeans.JumpingBeans;
+import net.tsz.afinal.view.bubbletextview.helper.LeBubbleTextViewHelper;
+import net.tsz.afinal.view.bubbletextview.widget.LeBubbleTitleTextView;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import liuliu.demo.list.R;
 import liuliu.demo.list.base.BaseActivity;
-import liuliu.demo.list.control.base.ImageLoader;
 import liuliu.demo.list.control.base.image.ImageCacheManager;
+import me.next.tagview.TagCloudView;
 
 /**
  * Created by Administrator on 2016/1/4.
@@ -24,6 +27,10 @@ import liuliu.demo.list.control.base.image.ImageCacheManager;
 public class DemoActivity extends BaseActivity {
     ImageView imageView;
     Button btn;
+    JumpingBeans jumpingBeans1;
+    TextView textView1;
+    Button bt1;
+    private LeBubbleTextViewHelper helper1;
 
     @Override
     public void initViews() {
@@ -39,6 +46,8 @@ public class DemoActivity extends BaseActivity {
                 ImageCacheManager.loadImage(url, imageView, getBitmapFromRes(R.mipmap.ic_launcher), getBitmapFromRes(R.mipmap.ic_launcher));
             }
         });
+        textView1 = (TextView) findViewById(R.id.jumping_text_1);
+        bt1 = (Button) findViewById(R.id.bt);
     }
 
     public Bitmap getBitmapFromRes(int resId) {
@@ -48,6 +57,67 @@ public class DemoActivity extends BaseActivity {
 
     @Override
     public void initEvents() {
+        loadJumpingBeans();
+        loadTag();
+        bt1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helper1.show();
+            }
+        });
+        helper1 = new LeBubbleTextViewHelper();
+        helper1.init(bt1, R.layout.view_demo_bubble_title1);
+//        helper1.show();
+        LeBubbleTitleTextView bubbleTitleTextView1 = (LeBubbleTitleTextView) helper1.getBubbleView();
+        bubbleTitleTextView1.setCancelImageOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                helper1.dismissBubblePopupWindow();
+            }
+        });
+    }
 
+    /**
+     * 1.文字后面加动态的“...”
+     * 2.整个文本波浪抖动
+     */
+    private void loadJumpingBeans() {
+        jumpingBeans1 = JumpingBeans.with(textView1)
+                .appendJumpingDots()
+                .build();
+//        jumpingBeans1 = JumpingBeans.with(textView1)
+//                .makeTextJump(0, textView1.getText().toString().indexOf(' '))
+//                .setIsWave(false)
+//                .setLoopDuration(1000)
+//                .build();
+    }
+
+    private void loadTag() {
+        List<String> tags = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            tags.add("标签" + i);
+        }
+
+        TagCloudView tagCloudView1 = (TagCloudView) findViewById(R.id.tag_cloud_view);
+        tagCloudView1.setTags(tags);
+        tagCloudView1.setOnTagClickListener(new TagCloudView.OnTagClickListener() {
+            @Override
+            public void onTagClick(int position) {
+                if (position == -1) {
+                    Toast.makeText(getApplicationContext(), "点击末尾文字",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "点击 position : " + position,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        tagCloudView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "TagView onClick",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

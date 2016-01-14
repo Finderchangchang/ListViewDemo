@@ -63,11 +63,18 @@ public class DetailListsActivity extends BaseActivity {
                 if (goodList == null) {
                     goodList = new GoodListFragment();
                     transaction.add(R.id.frag_ll, goodList);
-                    mFragment.add(goodList);
+
+                    goodList.setOnItemClick(new GoodListFragment.OnItemClick() {
+                        @Override
+                        public void onItemClick(String position) {
+                            loadFragment("xq");
+                            mDesc = "xq%id?" + position;
+                        }
+                    });
                 } else {
                     transaction.show(goodList);
                 }
-
+                mFragment.add(goodList);
                 break;
             case "xq"://跳转到商品详情页面
                 if (goodDetail == null) {
@@ -79,28 +86,28 @@ public class DetailListsActivity extends BaseActivity {
                             loadFragment("gwc");
                         }
                     });
-                    mFragment.add(goodDetail);
                 } else {
                     transaction.show(goodDetail);
                 }
+                mFragment.add(goodDetail);
                 break;
             case "help"://跳转到帮助中心页面
                 if (help == null) {
                     help = new HelpFragment();
                     transaction.add(R.id.frag_ll, help);
-                    mFragment.add(help);
                 } else {
                     transaction.show(help);
                 }
+                mFragment.add(help);
                 break;
             case "gwc"://购物车
                 if (gouwuche == null) {
                     gouwuche = new GouwucheFragment();
                     transaction.add(R.id.frag_ll, gouwuche);
-                    mFragment.add(gouwuche);
                 } else {
                     transaction.show(gouwuche);
                 }
+                mFragment.add(gouwuche);
                 break;
             case ""://我的订单
                 break;
