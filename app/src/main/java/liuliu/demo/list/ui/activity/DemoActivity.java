@@ -10,8 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.frakbot.jumpingbeans.JumpingBeans;
-import net.tsz.afinal.view.bubbletextview.helper.LeBubbleTextViewHelper;
-import net.tsz.afinal.view.bubbletextview.widget.LeBubbleTitleTextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +28,6 @@ public class DemoActivity extends BaseActivity {
     JumpingBeans jumpingBeans1;
     TextView textView1;
     Button bt1;
-    private LeBubbleTextViewHelper helper1;
 
     @Override
     public void initViews() {
@@ -59,22 +56,6 @@ public class DemoActivity extends BaseActivity {
     public void initEvents() {
         loadJumpingBeans();
         loadTag();
-        bt1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                helper1.show();
-            }
-        });
-        helper1 = new LeBubbleTextViewHelper();
-        helper1.init(bt1, R.layout.view_demo_bubble_title1);
-//        helper1.show();
-        LeBubbleTitleTextView bubbleTitleTextView1 = (LeBubbleTitleTextView) helper1.getBubbleView();
-        bubbleTitleTextView1.setCancelImageOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                helper1.dismissBubblePopupWindow();
-            }
-        });
     }
 
     /**

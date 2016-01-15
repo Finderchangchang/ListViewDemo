@@ -109,8 +109,6 @@ public class DetailListsActivity extends BaseActivity {
                 }
                 mFragment.add(gouwuche);
                 break;
-            case ""://我的订单
-                break;
         }
         transaction.commit();
     }
